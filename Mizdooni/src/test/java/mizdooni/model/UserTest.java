@@ -3,6 +3,7 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class UserTest {
@@ -18,5 +19,10 @@ public class UserTest {
     @Test
     public void testCheckCorrectPassword(){
         assertTrue(user.checkPassword("testPassword"));
+    }
+
+    @Test
+    public void testCheckWrongPassword(){
+        assertFalse(user.checkPassword("wrongPassword"));
     }
 }
