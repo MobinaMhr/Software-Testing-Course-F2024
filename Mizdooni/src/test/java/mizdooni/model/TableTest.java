@@ -50,4 +50,10 @@ public class TableTest {
         table.addReservation(reservation1);
         assertTrue(table.isReserved(reservation1.getDateTime()));
     }
+
+    @Test
+    public void testIsReservedOnNotExistingReservation(){
+        table.addReservation(reservation1);
+        assertFalse(table.isReserved(LocalDateTime.now().plusDays(10)));
+    }
 }
