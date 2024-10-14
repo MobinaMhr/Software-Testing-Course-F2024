@@ -44,4 +44,10 @@ public class TableTest {
         assertEquals(reservation1, table.getReservations().getFirst());
         assertEquals(reservation2, table.getReservations().get(1));
     }
+
+    @Test
+    public void testIsReservedOnExistingReservation(){
+        table.addReservation(reservation1);
+        assertTrue(table.isReserved(reservation1.getDateTime()));
+    }
 }
