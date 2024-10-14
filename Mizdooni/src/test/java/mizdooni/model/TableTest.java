@@ -56,4 +56,11 @@ public class TableTest {
         table.addReservation(reservation1);
         assertFalse(table.isReserved(LocalDateTime.now().plusDays(10)));
     }
+
+    @Test
+    public void testIsReservedOnCancelledReservation(){
+        table.addReservation(reservation1);
+        reservation1.cancel();
+        assertFalse(table.isReserved(reservation1.getDateTime()));
+    }
 }
