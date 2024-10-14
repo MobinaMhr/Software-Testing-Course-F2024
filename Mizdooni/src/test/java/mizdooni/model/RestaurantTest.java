@@ -49,4 +49,10 @@ public class RestaurantTest {
     public void testGetTableFromNoTables(){//TODO: you should change the naming!
         assertNull(restaurant.getTable(1));
     }
+
+    @Test
+    public void testGetTableWhichDosntExist(){//TODO: should change the naming!
+        Table table1 = new Table(-1, restaurant.getId(), 2);
+        assertNull(restaurant.getTable(5));
+    }
 }
