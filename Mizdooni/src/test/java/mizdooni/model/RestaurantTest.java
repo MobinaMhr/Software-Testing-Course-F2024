@@ -44,4 +44,9 @@ public class RestaurantTest {
         assertEquals(table1, restaurant.getTables().getFirst());
         assertEquals(table2, restaurant.getTables().get(1));
     }
+
+    @Test
+    public void testGetTableFromNoTables(){//TODO: you should change the naming!
+        assertNull(restaurant.getTable(1));
+    }
 }
