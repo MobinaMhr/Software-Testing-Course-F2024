@@ -30,9 +30,18 @@ public class TableTest {
     }
 
     @Test
-    public void testAddReservation(){
+    public void testAddSingleReservation(){
         table.addReservation(reservation1);
         assertEquals(1, table.getReservations().size());
         assertEquals(reservation1, table.getReservations().getFirst());
+    }//TODO:ask if we should check the time of reservation and prevent reservations at same time for a table or not?
+
+    @Test
+    public void testAddMultipleReservations(){
+        table.addReservation(reservation1);
+        table.addReservation(reservation2);
+        assertEquals(2, table.getReservations().size());
+        assertEquals(reservation1, table.getReservations().getFirst());
+        assertEquals(reservation2, table.getReservations().get(1));
     }
 }
