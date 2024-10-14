@@ -31,4 +31,17 @@ public class RestaurantTest {
         assertEquals(1, table.getTableNumber());
         assertEquals(table, restaurant.getTables().getFirst());
     }
+
+    @Test
+    public void testAddMultipleTables(){
+        Table table1 = new Table(-1, restaurant.getId(), 2);
+        Table table2 = new Table(-1, restaurant.getId(), 4);
+        restaurant.addTable(table1);
+        restaurant.addTable(table2);
+        assertEquals(2, restaurant.getTables().size());
+        assertEquals(1, table1.getTableNumber());
+        assertEquals(2, table2.getTableNumber());
+        assertEquals(table1, restaurant.getTables().getFirst());
+        assertEquals(table2, restaurant.getTables().get(1));
+    }
 }
