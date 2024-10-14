@@ -63,4 +63,13 @@ public class RestaurantTest {
         restaurant.addTable(table1);
         assertEquals(table1, restaurant.getTable(1));
     }
+
+    @Test
+    public void testGetMaxSitsNumber(){
+        Table table1 = new Table(-1, restaurant.getId(), 2);
+        Table table2 = new Table(-1, restaurant.getId(), 4);
+        restaurant.addTable(table1);
+        restaurant.addTable(table2);
+        assertEquals(4, restaurant.getMaxSeatsNumber());
+    }
 }
