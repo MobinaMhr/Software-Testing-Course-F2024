@@ -30,6 +30,7 @@ public class TableTest {
     }
 
     @Test
+    @DisplayName("Test Add Single Reservation")
     public void testAddSingleReservation(){
         table.addReservation(reservation1);
         assertEquals(1, table.getReservations().size());
@@ -37,6 +38,7 @@ public class TableTest {
     }//TODO:ask if we should check the time of reservation and prevent reservations at same time for a table or not?
 
     @Test
+    @DisplayName("Test Add Multiple Reservations")
     public void testAddMultipleReservations(){
         table.addReservation(reservation1);
         table.addReservation(reservation2);
@@ -46,18 +48,21 @@ public class TableTest {
     }
 
     @Test
+    @DisplayName("Test is Reserved on Existing Reservation")
     public void testIsReservedOnExistingReservation(){
         table.addReservation(reservation1);
         assertTrue(table.isReserved(reservation1.getDateTime()));
     }
 
     @Test
+    @DisplayName("Test is Reserved on Not Existing Reservation")
     public void testIsReservedOnNotExistingReservation(){
         table.addReservation(reservation1);
         assertFalse(table.isReserved(LocalDateTime.now().plusDays(10)));
     }
 
     @Test
+    @DisplayName("Test is Reserved on Cancelled Reservation")
     public void testIsReservedOnCancelledReservation(){
         table.addReservation(reservation1);
         reservation1.cancel();
