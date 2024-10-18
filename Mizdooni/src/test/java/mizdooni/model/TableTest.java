@@ -30,12 +30,20 @@ public class TableTest {
     }
 
     @Test
-    @DisplayName("Test Add Single Reservation")
-    public void testAddSingleReservation(){
+    @DisplayName("Test Correct Construction of Table")
+    public void testCorrectConstructionOfTable(){
+        assertEquals(1, table.getTableNumber());
+        assertEquals(0, table.getReservations().size());
+        assertEquals(4, table.getSeatsNumber());
+    }
+
+    @Test
+    @DisplayName("Test Adding Single Reservation")
+    public void testAddingSingleReservation(){
         table.addReservation(reservation1);
         assertEquals(1, table.getReservations().size());
         assertEquals(reservation1, table.getReservations().getFirst());
-    }//TODO:ask if we should check the time of reservation and prevent reservations at same time for a table or not?
+    }
 
     @Test
     @DisplayName("Test Add Multiple Reservations")
@@ -48,22 +56,22 @@ public class TableTest {
     }
 
     @Test
-    @DisplayName("Test is Reserved on Existing Reservation")
-    public void testIsReservedOnExistingReservation(){
+    @DisplayName("Test Reserved on Existing Reservation")
+    public void testReservedOnExistingReservation(){
         table.addReservation(reservation1);
         assertTrue(table.isReserved(reservation1.getDateTime()));
     }
 
     @Test
-    @DisplayName("Test is Reserved on Not Existing Reservation")
-    public void testIsReservedOnNotExistingReservation(){
+    @DisplayName("Test Reserved on Not Existing Reservation")
+    public void testReservedOnNotExistingReservation(){
         table.addReservation(reservation1);
         assertFalse(table.isReserved(LocalDateTime.now().plusDays(10)));
     }
 
     @Test
-    @DisplayName("Test is Reserved on Cancelled Reservation")
-    public void testIsReservedOnCancelledReservation(){
+    @DisplayName("Test Not Reserved on Cancelled Reservation")
+    public void testNotReservedOnCancelledReservation(){
         table.addReservation(reservation1);
         reservation1.cancel();
         assertFalse(table.isReserved(reservation1.getDateTime()));
