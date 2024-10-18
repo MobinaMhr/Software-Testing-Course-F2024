@@ -15,9 +15,40 @@ public class UserTest {
     private User clientUser;
     private User managerUser;
 
+    Restaurant restaurant1;
+    Restaurant restaurant2;
+    Restaurant restaurant3;
+    Restaurant restaurant4;
+
+    Table table1;
+    Table table2;
+    Table table3;
+
     @BeforeEach
     public void setUp() {
         address = new Address("Iran", "Tehran", "Kargar");
+
+        restaurant1 = new Restaurant("restaurant1", managerUser,
+                "restaurantType", LocalTime.now(), LocalTime.now(),
+                "restaurant1 description.", address, "imageLink");
+
+        restaurant2 = new Restaurant("restaurant2", managerUser,
+                "restaurantType", LocalTime.now(), LocalTime.now(),
+                "restaurant2 description.", address, "imageLink");
+
+        restaurant3 = new Restaurant("restaurant3", managerUser,
+                "restaurantType", LocalTime.now(), LocalTime.now(),
+                "restaurant3 description.", address, "imageLink");
+
+        restaurant4 = new Restaurant("restaurant4", managerUser,
+                "restaurantType", LocalTime.now(), LocalTime.now(),
+                "restaurant4 description.", address, "imageLink");
+
+        Table table1 = new Table(1, restaurant1.getId(), 8);
+        Table table2 = new Table(1, restaurant1.getId(), 8);
+        Table table3 = new Table(1, restaurant3.getId(), 8);
+
+
         user = new User("testUser", "testPassword", "test@example.com", address, User.Role.client);
 
         clientUser = new User("client", "cPass", "client@example.com", address, User.Role.client);
@@ -33,7 +64,6 @@ public class UserTest {
         assertEquals(user.getRole(), User.Role.client);
 
         assertEquals(0, clientUser.getReservations().size());
-
     }
 
     @Test
@@ -69,65 +99,30 @@ public class UserTest {
     @Test
     @DisplayName("Test Checking Ongoing Users Reservation")
     public void testCheckingOngoingUsersReservation() {
-        Restaurant restaurant = new Restaurant(
-                "restaurant1", managerUser, "restaurantType", LocalTime.now(), LocalTime.now(),
-                "restaurant description.", address, "imageLink");
-
-        Table table = new Table(1, restaurant.getId(), 8);
-
-        Reservation reservation = new Reservation(clientUser, restaurant, table, LocalDateTime.now());
+        Reservation reservation = new Reservation(clientUser, restaurant1, table1, LocalDateTime.now());
 
         clientUser.addReservation(reservation);
 
-        assertTrue(clientUser.checkReserved(restaurant));
+        assertTrue(clientUser.checkReserved(restaurant1));
     }
 
     @Test
     @DisplayName("Test Getting Canceled Reservation")
     public void testGettingCanceledReservation() {
-        Restaurant restaurant = new Restaurant(
-                "restaurant1", managerUser, "restaurantType", LocalTime.now(), LocalTime.now(),
-                "restaurant description.", address, "imageLink");
-
-        Table table = new Table(1, restaurant.getId(), 8);
-
-        Reservation reservation = new Reservation(clientUser, restaurant, table, LocalDateTime.now());
+        Reservation reservation = new Reservation(clientUser, restaurant1, table1, LocalDateTime.now());
 
         clientUser.addReservation(reservation);
         clientUser.getReservation(reservation.getReservationNumber()).cancel();
 
-        assertFalse(clientUser.checkReserved(restaurant));
+        assertFalse(clientUser.checkReserved(restaurant1));
     }
 
     @Test
     @DisplayName("Test Checking Multiple Ongoing Reservations")
     public void testCheckingMultipleOngoingReservations() {
-        Restaurant restaurant1 = new Restaurant(
-                "restaurant1", managerUser, "restaurantType", LocalTime.now(), LocalTime.now(),
-                "restaurant1 description.", address, "imageLink");
-
-        Restaurant restaurant2 = new Restaurant(
-                "restaurant2", managerUser, "restaurantType", LocalTime.now(), LocalTime.now(),
-                "restaurant2 description.", address, "imageLink");
-
-        Restaurant restaurant3 = new Restaurant(
-                "restaurant3", managerUser, "restaurantType", LocalTime.now(), LocalTime.now(),
-                "restaurant3 description.", address, "imageLink");
-
-        Restaurant restaurant4 = new Restaurant(
-                "restaurant4", managerUser, "restaurantType", LocalTime.now(), LocalTime.now(),
-                "restaurant4 description.", address, "imageLink");
-
-        Table table1_1 = new Table(1, restaurant1.getId(), 8);
-        Table table1_2 = new Table(1, restaurant1.getId(), 8);
-
-        Table table2_1 = new Table(1, restaurant2.getId(), 8);
-
-        Table table3_1 = new Table(1, restaurant3.getId(), 8);
-
-        Reservation reservation1 = new Reservation(clientUser, restaurant1, table1_1, LocalDateTime.now());
-        Reservation reservation2 = new Reservation(clientUser, restaurant1, table1_2, LocalDateTime.now());
-        Reservation reservation3 = new Reservation(clientUser, restaurant3, table3_1, LocalDateTime.now());
+        Reservation reservation1 = new Reservation(clientUser, restaurant1, table1, LocalDateTime.now());
+        Reservation reservation2 = new Reservation(clientUser, restaurant1, table2, LocalDateTime.now());
+        Reservation reservation3 = new Reservation(clientUser, restaurant3, table3, LocalDateTime.now());
 
         clientUser.addReservation(reservation1);
         clientUser.addReservation(reservation2);
