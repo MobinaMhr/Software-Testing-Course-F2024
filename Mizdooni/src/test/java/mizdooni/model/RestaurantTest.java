@@ -4,6 +4,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -23,8 +24,25 @@ public class RestaurantTest {
 
     }
 
+//    public Restaurant(String name, User manager, String type, LocalTime startTime, LocalTime endTime,
+//                      String description, Address address, String imageLink) {
+//        this.id = idCounter++;
+//        this.name = name;
+//        this.manager = manager;
+//        this.type = type;
+//        this.startTime = startTime;
+//        this.endTime = endTime;
+//        this.description = description;
+//        this.address = address;
+//        this.imageLink = imageLink;
+//        this.tables = new ArrayList<>();
+//        this.reviews = new ArrayList<>();
+//    }
+
+
     @Test
-    public void testAddSingleTable(){
+    @DisplayName("Test Adding Single Table")
+    public void testAddingSingleTable(){
         Table table = new Table(-1, restaurant.getId(), 2);
         restaurant.addTable(table);
         assertEquals(1, restaurant.getTables().size());
@@ -33,7 +51,8 @@ public class RestaurantTest {
     }
 
     @Test
-    public void testAddMultipleTables(){
+    @DisplayName("Test Adding Multiple Tables")
+    public void testAddingMultipleTables(){
         Table table1 = new Table(-1, restaurant.getId(), 2);
         Table table2 = new Table(-1, restaurant.getId(), 4);
         restaurant.addTable(table1);
@@ -46,30 +65,40 @@ public class RestaurantTest {
     }
 
     @Test
-    public void testGetTableFromNoTables(){//TODO: you should change the naming!
+    @DisplayName("Test Getting Table from Empty Restaurant")
+    public void testGettingTableFromEmptyRestaurant(){
         assertNull(restaurant.getTable(1));
     }
 
     @Test
-    public void testGetTableWhichDosntExist(){//TODO: should change the naming!
+    @DisplayName("Test Getting non Existing Table")
+    public void testGettingNonExistingTable(){
         Table table1 = new Table(-1, restaurant.getId(), 2);
         restaurant.addTable(table1);
         assertNull(restaurant.getTable(5));
     }
 
     @Test
-    public void testGetTableForExistingTable(){
+    @DisplayName("Test Getting Table for Existing Table")
+    public void testGettingTableForExistingTable(){
         Table table1 = new Table(-1, restaurant.getId(), 2);
         restaurant.addTable(table1);
         assertEquals(table1, restaurant.getTable(1));
     }
 
     @Test
-    public void testGetMaxSitsNumber(){
+    @DisplayName("Test Getting Max Seats Number")
+    public void testGettingMaxSeatsNumber(){
         Table table1 = new Table(-1, restaurant.getId(), 2);
         Table table2 = new Table(-1, restaurant.getId(), 4);
         restaurant.addTable(table1);
         restaurant.addTable(table2);
         assertEquals(4, restaurant.getMaxSeatsNumber());
+    }
+
+    @Test
+    @DisplayName("Test Getting Correct Seat Count")
+    public void testGettingCorrectSeatCount() {
+        assertEquals(1, restaurant.getMaxSeatsNumber());
     }
 }
