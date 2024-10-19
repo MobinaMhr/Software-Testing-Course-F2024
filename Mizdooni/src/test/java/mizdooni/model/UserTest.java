@@ -74,12 +74,6 @@ public class UserTest {
         assertNotEquals(wrongUsername, user.getUsername());
     }
 
-    @Test
-    @DisplayName("Test Checking Wrong Username")
-    public void testCheckingWrongUsername() {
-        assertNotEquals("wrongTestUser", user.getUsername());
-    }
-
     @ParameterizedTest
     @ValueSource(strings = { "wrongPassword", "incorrectPass", "dummyPassword" })
     @DisplayName("Test Checking Wrong Password")
