@@ -2,14 +2,18 @@ package mizdooni.model;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import javax.xml.stream.events.Comment;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class RestaurantTest {
     private Restaurant restaurant;
     private User manager;
@@ -23,6 +27,8 @@ public class RestaurantTest {
     User user1;
     User user2;
 
+    ArrayList<Table> tables = new ArrayList<>();
+
     @BeforeEach
     public void setUp(){
         address = new Address("Iran", "Tehran", "Kargar");
@@ -35,7 +41,10 @@ public class RestaurantTest {
         restaurant = new Restaurant(restaurantName, manager, restaurantType, LocalTime.now(),
                 LocalTime.now().plusHours(8), "100% goosfandi", address, ":|");
         table1 = new Table(-1, restaurant.getId(), 2);
-        table2 = new Table(-1, restaurant.getId(), 4);
+        table2 = new Table(2, restaurant.getId(), 4);
+
+        tables.add(table1);
+        tables.add(table2);
 
         user1 = new User("user1", "user1Password", "user1@example.com", address, User.Role.client);
         user2 = new User("user2", "user2Password", "user2@example.com", address, User.Role.client);
@@ -71,25 +80,25 @@ public class RestaurantTest {
         assertEquals(table2, restaurant.getTables().get(1));
     }
 
-    @Test
-    @DisplayName("Test Getting Table from Empty Restaurant")
-    public void testGettingTableFromEmptyRestaurant(){
-        assertEquals(0, restaurant.getTables().size());
-        assertNull(restaurant.getTable(1));
-    }
+    @ParameterizedTest
+    @MethodSource("tableProvider")
+    @DisplayName("Test Getting Table from Restaurant\n Getting Table from Empty Restaurant \n Getting non Existing Table \n Getting Table for Existing Table")
+    public void testGettingTableFromRestaurant(int tableCount, int expectedTableIndex) {
+        for (int i = 0; i < tableCount; i++) {
+            restaurant.addTable(tables.get(i));
+        }
 
-    @Test
-    @DisplayName("Test Getting non Existing Table")
-    public void testGettingNonExistingTable(){
-        restaurant.addTable(table1);
-        assertNull(restaurant.getTable(5));
-    }
+        Table expectedTable = (expectedTableIndex) < 0 ? null : tables.get(expectedTableIndex);
 
-    @Test
-    @DisplayName("Test Getting Table for Existing Table")
-    public void testGettingTableForExistingTable(){
-        restaurant.addTable(table1);
-        assertEquals(table1, restaurant.getTable(1));
+        assertEquals(tableCount, restaurant.getTables().size());
+        assertEquals(expectedTable, restaurant.getTable(2));
+    }
+    private Stream<Arguments> tableProvider() {
+        return Stream.of(
+                Arguments.of(0, -1),
+                Arguments.of(1, -1),
+                Arguments.of(2, 1)
+        );
     }
 
     @Test
