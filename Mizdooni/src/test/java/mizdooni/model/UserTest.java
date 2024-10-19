@@ -1,6 +1,7 @@
 package mizdooni.model;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.LocalDateTime;
@@ -66,43 +67,52 @@ public class UserTest {
         assertEquals(0, clientUser.getReservations().size());
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = { "wrongTestUser", "wrongClient", "wrongManager" })
+    @DisplayName("Test Checking Wrong Username")
+    public void testCheckingWrongUsername(String wrongUsername) {
+        assertNotEquals(wrongUsername, user.getUsername());
+    }
+
     @Test
     @DisplayName("Test Checking Wrong Username")
     public void testCheckingWrongUsername() {
         assertNotEquals("wrongTestUser", user.getUsername());
     }
 
-    @Test
+    @ParameterizedTest
+    @ValueSource(strings = { "wrongPassword", "incorrectPass", "dummyPassword" })
     @DisplayName("Test Checking Wrong Password")
-    public void testCheckingWrongPassword() {
-        assertFalse(user.checkPassword("wrongPassword"));
+    public void testCheckingWrongPassword(String wrongPassword) {
+        assertFalse(user.checkPassword(wrongPassword));
     }
 
-    @Test
+    @ParameterizedTest
+    @ValueSource(strings = { "wrongTest@example.com", "client@wrong.com", "manager@wrong.com" })
     @DisplayName("Test Checking Wrong Email")
-    public void testCheckingWrongEmail() {
-        assertNotEquals("wrongTest@example.com", user.getEmail());
+    public void testCheckingWrongEmail(String wrongEmail) {
+        assertNotEquals(wrongEmail, user.getEmail());
     }
 
     @Test
     @DisplayName("Test Checking Wrong Role")
     public void testCheckingWrongRole() {
-        assertNotEquals(User.Role.manager, user.getRole());
+        assertNotEquals(User.Role.manager, clientUser.getRole());
     }
 
-    @Test
+
+    @ParameterizedTest
+    @ValueSource(ints = { 1, 2, 5, -1 })
     @DisplayName("Test Checking Wrong Reservation Count")
-    public void testCheckingWrongReservationCount() {
-        assertNotEquals(1, clientUser.getReservations().size());
+    public void testCheckingWrongReservationCount(int wrongCount) {
+        assertNotEquals(wrongCount, clientUser.getReservations().size());
     }
 
     @Test
     @DisplayName("Test Checking Ongoing Users Reservation")
     public void testCheckingOngoingUsersReservation() {
         Reservation reservation = new Reservation(clientUser, restaurant1, table1, LocalDateTime.now());
-
         clientUser.addReservation(reservation);
-
         assertTrue(clientUser.checkReserved(restaurant1));
     }
 
@@ -110,10 +120,8 @@ public class UserTest {
     @DisplayName("Test Getting Canceled Reservation")
     public void testGettingCanceledReservation() {
         Reservation reservation = new Reservation(clientUser, restaurant1, table1, LocalDateTime.now());
-
         clientUser.addReservation(reservation);
         clientUser.getReservation(reservation.getReservationNumber()).cancel();
-
         assertFalse(clientUser.checkReserved(restaurant1));
     }
 
