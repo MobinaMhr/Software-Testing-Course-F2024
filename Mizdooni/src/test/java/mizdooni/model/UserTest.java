@@ -1,15 +1,19 @@
 package mizdooni.model;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class UserTest {
     private Address address;
     private User user;
@@ -112,11 +116,37 @@ public class UserTest {
 
     @Test
     @DisplayName("Test Getting Canceled Reservation")
-    public void testGettingCanceledReservation() {
+    public void testCheckingCanceledReservation() {
         Reservation reservation = new Reservation(clientUser, restaurant1, table1, LocalDateTime.now());
         clientUser.addReservation(reservation);
         clientUser.getReservation(reservation.getReservationNumber()).cancel();
         assertFalse(clientUser.checkReserved(restaurant1));
+    }
+
+    @ParameterizedTest
+    @MethodSource("reservationProvider")
+    @DisplayName("Test Reservation Scenarios \n1: getting existing reservation\n2:getting cancelled reservation\n3:getting nonexisting reservation")
+    public void testReservationScenarios(Reservation reservation, boolean shouldCancel, boolean shouldAdd,
+                                         Reservation expected) {
+        if (shouldAdd)
+            clientUser.addReservation(reservation);
+        if (shouldCancel)
+            reservation.cancel();
+        assertEquals(expected, clientUser.getReservation(reservation.getReservationNumber()));
+    }
+
+    private Stream<Arguments> reservationProvider() {
+        Reservation existingReservation = new Reservation(clientUser, restaurant1, table1, LocalDateTime.now());
+        Reservation canceledReservation = new Reservation(clientUser, restaurant1, table1, LocalDateTime.now());
+        Reservation nonExistingReservation = new Reservation(clientUser, restaurant1, table1, LocalDateTime.now());;
+
+        return Stream.of(
+                Arguments.of(existingReservation, false, true, existingReservation),
+
+                Arguments.of(canceledReservation, true, true, null),
+
+                Arguments.of(nonExistingReservation, false, false, null)
+        );
     }
 
     @Test
