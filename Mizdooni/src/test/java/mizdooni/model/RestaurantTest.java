@@ -107,42 +107,32 @@ public class RestaurantTest {
     }
 
     @Test
-    @DisplayName("Test Getting Correct Seat Count")
-    public void testGettingCorrectSeatCount() {
-        assertEquals(0, restaurant.getMaxSeatsNumber());
+    @DisplayName("Test Adding Single Review")
+    public void testAddingSingleReview(){
+        Rating rating = new Rating(){{food = 4; ambiance = 4.2; service = 3.8; overall= 4.1;}};
+        Review review1 = new Review(user1, rating, "This restaurant was perfect.", LocalDateTime.now());
+
+        restaurant.addReview(review1);
+
+        assertEquals(1, restaurant.getReviews().size());
+        assertEquals(review1, restaurant.getReviews().getFirst());
     }
 
-//    @Test
-//    @DisplayName("Test Adding Single Review")
-//    public void testAddingSingleReview(){
-//        Rating rating = new Rating();
-//        Review review1 = new Review(user1, rating, "This restaurant was perfect.", LocalDateTime.now());
-//
-//        restaurant.addReview(review1);
-//
-//        Rating averageRating =  restaurant.getAverageRating();
-//        System.out.println(restaurant.getStarCount());
-//        System.out.println(averageRating.overall);
-//        System.out.println(averageRating.food);
-//        System.out.println(averageRating.service);
-//        System.out.println(averageRating.ambiance);
-//    }
-//
-//    @Test
-//    @DisplayName("Test Adding Multiple Reviews")
-//    public void testAddingMultipleReviews(){
-//        Rating rating = new Rating();
-//        Review review1 = new Review(user1, rating, "This restaurant was perfect.", LocalDateTime.now());
-//        Review review2 = new Review(user2, rating, "This restaurant was not perfect.", LocalDateTime.now());
-//
-//        restaurant.addReview(review1);
-//        restaurant.addReview(review2);
-//
-//        Rating averageRating =  restaurant.getAverageRating();
-//        System.out.println(restaurant.getStarCount());
-//        System.out.println(averageRating.overall);
-//        System.out.println(averageRating.food);
-//        System.out.println(averageRating.service);
-//        System.out.println(averageRating.ambiance);
-//    }
+    @Test
+    @DisplayName("Test Adding Multiple Reviews")
+    public void testAddingMultipleReviews() {
+        Rating rating1 = new Rating(){{food = 4; ambiance = 4.2; service = 3.8; overall= 4.1;}};
+        Rating rating2 = new Rating(){{food = 4; ambiance = 4.2; service = 4.1; overall= 4.1;}};
+        Review review1 = new Review(user1, rating1, "This restaurant was perfect.", LocalDateTime.now());
+        Review review2 = new Review(user2, rating2, "This restaurant was not perfect.", LocalDateTime.now());
+
+        restaurant.addReview(review1);
+        restaurant.addReview(review2);
+
+        assertEquals(2, restaurant.getReviews().size());
+        assertEquals(review1, restaurant.getReviews().getFirst());
+        assertEquals(review2, restaurant.getReviews().get(1));
+    }
+    
+
 }
