@@ -70,11 +70,12 @@ public class UserTest {
         assertEquals(expectedResult, user.checkPassword(password));
     }
 
-    @ParameterizedTest
-    @ValueSource(ints = { 1, 2, 5, -1 })
-    @DisplayName("Test Checking Wrong Reservation Count")
-    public void testCheckingWrongReservationCount(int wrongCount) {
-        assertNotEquals(wrongCount, clientUser.getReservations().size());
+    @Test
+    @DisplayName("Test Checking Reservation Count")
+    public void testCheckingReservationCount() {
+        Reservation reservation = new Reservation(clientUser, restaurant1, table1, LocalDateTime.now());
+        clientUser.addReservation(reservation);
+        assertEquals(1, clientUser.getReservations().size());
     }
 
     @Test
