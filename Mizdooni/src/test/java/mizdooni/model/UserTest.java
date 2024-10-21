@@ -108,9 +108,10 @@ public class UserTest {
 
     @Test
     @DisplayName("Test Checking Ongoing Users Reservation")
-    public void testCheckingOngoingUsersReservation() {
+    public void testCheckingOngoingUsersReservation() throws InterruptedException {
         Reservation reservation = new Reservation(clientUser, restaurant1, table1, LocalDateTime.now());
         clientUser.addReservation(reservation);
+        Thread.sleep(100);
         assertTrue(clientUser.checkReserved(restaurant1));
     }
 
