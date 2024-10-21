@@ -61,10 +61,13 @@ public class UserTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "wrongPassword", "incorrectPass", "dummyPassword" })
-    @DisplayName("Test Checking Wrong Password")
-    public void testCheckingWrongPassword(String wrongPassword) {
-        assertFalse(user.checkPassword(wrongPassword));
+    @CsvSource({
+            "true, testPassword",
+            "false, wrongPassword"
+    })
+    @DisplayName("Test Checking Password")
+    public void testCheckingPassword(boolean expectedResult, String password) {
+        assertEquals(expectedResult, user.checkPassword(password));
     }
 
     @ParameterizedTest
