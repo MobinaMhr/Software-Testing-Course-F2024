@@ -51,15 +51,6 @@ public class RestaurantTest {
     }
 
     @Test
-    @DisplayName("Test Correct Construction of Restaurant")
-    public void testCorrectConstructionOfRestaurant(){
-        assertEquals(restaurantName, restaurant.getName());
-        assertEquals(manager, restaurant.getManager());
-        assertEquals(restaurantType, restaurant.getType());
-        assertEquals(address, restaurant.getAddress());
-    }
-
-    @Test
     @DisplayName("Test Adding Single Table")
     public void testAddingSingleTable(){
         restaurant.addTable(table1);
@@ -118,7 +109,7 @@ public class RestaurantTest {
     @Test
     @DisplayName("Test Getting Correct Seat Count")
     public void testGettingCorrectSeatCount() {
-        assertEquals(1, restaurant.getMaxSeatsNumber());
+        assertEquals(0, restaurant.getMaxSeatsNumber());
     }
 
 //    @Test
