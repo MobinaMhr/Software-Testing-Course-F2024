@@ -168,4 +168,18 @@ public class RestaurantTest {
         assertEquals(4.3, averageRating.overall);
     }
 
+    @Test
+    @DisplayName("checking getStarCount")
+    public void testGetStarCount(){
+        Rating rating1 = new Rating(){{food = 4; ambiance = 4.2; service = 3.7; overall= 4.1;}};
+        Rating rating2 = new Rating(){{food = 4; ambiance = 4.1; service = 4.1; overall= 4.5;}};
+        Review review1 = new Review(user1, rating1, "This restaurant was perfect.", LocalDateTime.now());
+        Review review2 = new Review(user2, rating2, "This restaurant was not perfect.", LocalDateTime.now());
+
+        restaurant.addReview(review1);
+        restaurant.addReview(review2);
+
+        assertEquals(4, restaurant.getStarCount());
+    }
+
 }
