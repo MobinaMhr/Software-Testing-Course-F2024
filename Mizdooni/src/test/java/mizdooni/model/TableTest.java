@@ -1,6 +1,7 @@
 package mizdooni.model;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import static org.junit.jupiter.api.Assertions.*;
 import java.time.LocalTime;
@@ -75,5 +76,19 @@ public class TableTest {
         table.addReservation(reservation1);
         reservation1.cancel();
         assertFalse(table.isReserved(reservation1.getDateTime()));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "false, true, 0",
+            "false, false, 10",
+            "true, false, 0"
+    })
+    @DisplayName("shiiiiiiiiiiiiiiiiiiiiiit")
+    public void testIsReserved(boolean shouldBeCancelled, boolean expected, int offset){
+        table.addReservation(reservation1);
+        if (shouldBeCancelled)
+            reservation1.cancel();
+        assertEquals(expected, table.isReserved(reservation1.getDateTime().plusDays(offset)));
     }
 }
