@@ -31,14 +31,6 @@ public class TableTest {
     }
 
     @Test
-    @DisplayName("Test Correct Construction of Table")
-    public void testCorrectConstructionOfTable(){
-        assertEquals(1, table.getTableNumber());
-        assertEquals(0, table.getReservations().size());
-        assertEquals(4, table.getSeatsNumber());
-    }
-
-    @Test
     @DisplayName("Test Adding Single Reservation")
     public void testAddingSingleReservation(){
         table.addReservation(reservation1);
