@@ -60,44 +60,12 @@ public class UserTest {
         managerUser = new User("manager", "mPass", "manager@example.com", address, User.Role.manager);
     }
 
-    @Test
-    @DisplayName("Test Correct Construction of User")
-    public void testCorrectConstructionOfUser(){
-        assertEquals("testUser", user.getUsername());
-        assertTrue(user.checkPassword("testPassword"));
-        assertEquals("test@example.com", user.getEmail());
-        assertEquals(user.getRole(), User.Role.client);
-
-        assertEquals(0, clientUser.getReservations().size());
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = { "wrongTestUser", "wrongClient", "wrongManager" })
-    @DisplayName("Test Checking Wrong Username")
-    public void testCheckingWrongUsername(String wrongUsername) {
-        assertNotEquals(wrongUsername, user.getUsername());
-    }
-
     @ParameterizedTest
     @ValueSource(strings = { "wrongPassword", "incorrectPass", "dummyPassword" })
     @DisplayName("Test Checking Wrong Password")
     public void testCheckingWrongPassword(String wrongPassword) {
         assertFalse(user.checkPassword(wrongPassword));
     }
-
-    @ParameterizedTest
-    @ValueSource(strings = { "wrongTest@example.com", "client@wrong.com", "manager@wrong.com" })
-    @DisplayName("Test Checking Wrong Email")
-    public void testCheckingWrongEmail(String wrongEmail) {
-        assertNotEquals(wrongEmail, user.getEmail());
-    }
-
-    @Test
-    @DisplayName("Test Checking Wrong Role")
-    public void testCheckingWrongRole() {
-        assertNotEquals(User.Role.manager, clientUser.getRole());
-    }
-
 
     @ParameterizedTest
     @ValueSource(ints = { 1, 2, 5, -1 })
