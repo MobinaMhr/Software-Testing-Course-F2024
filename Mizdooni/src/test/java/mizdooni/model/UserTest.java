@@ -49,9 +49,9 @@ public class UserTest {
                 "restaurantType", LocalTime.now(), LocalTime.now(),
                 "restaurant4 description.", address, "imageLink");
 
-        Table table1 = new Table(1, restaurant1.getId(), 8);
-        Table table2 = new Table(1, restaurant1.getId(), 8);
-        Table table3 = new Table(1, restaurant3.getId(), 8);
+        table1 = new Table(1, restaurant1.getId(), 8);
+        table2 = new Table(1, restaurant1.getId(), 8);
+        table3 = new Table(1, restaurant3.getId(), 8);
 
 
         user = new User("testUser", "testPassword", "test@example.com", address, User.Role.client);
@@ -165,5 +165,18 @@ public class UserTest {
         Assertions.assertEquals(reservation1, clientUser.getReservation(reservation1.getReservationNumber()));
         Assertions.assertEquals(reservation2, clientUser.getReservation(reservation2.getReservationNumber()));
         Assertions.assertEquals(reservation3, clientUser.getReservation(reservation3.getReservationNumber()));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "true, 0",
+            "false, 20"
+    })
+    @DisplayName("testCheckReservedWithDifferentTimings\n Reservation Time and Add Reservation at Same Time\n Reservation Time after User Add Reservation")
+    public void testCheckReservedWithDifferentTimings(boolean expected, int offset) throws InterruptedException {
+        Reservation reservation1 = new Reservation(clientUser, restaurant1, table1, LocalDateTime.now().plusDays(offset));
+        clientUser.addReservation(reservation1);
+        Thread.sleep(100);
+        Assertions.assertEquals(expected, clientUser.checkReserved(restaurant1));
     }
 }
