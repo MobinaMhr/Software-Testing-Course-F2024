@@ -133,6 +133,21 @@ public class RestaurantTest {
         assertEquals(review1, restaurant.getReviews().getFirst());
         assertEquals(review2, restaurant.getReviews().get(1));
     }
-    
+
+    @Test
+    @DisplayName("checks the updating user review")
+    public void testChangingUserReview(){
+        Rating rating1 = new Rating(){{food = 4; ambiance = 4.2; service = 3.8; overall= 4.1;}};
+        Rating rating2 = new Rating(){{food = 4; ambiance = 4.2; service = 4.1; overall= 4.1;}};
+        Review review1 = new Review(user1, rating1, "This restaurant was perfect.", LocalDateTime.now());
+        Review review2 = new Review(user1, rating2, "This restaurant was not perfect.", LocalDateTime.now());
+
+        restaurant.addReview(review1);
+        restaurant.addReview(review2);
+
+        assertEquals(1, restaurant.getReviews().size());
+        assertEquals(review2, restaurant.getReviews().getFirst());
+
+    }
 
 }
