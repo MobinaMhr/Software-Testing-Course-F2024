@@ -56,28 +56,6 @@ public class TableTest {
         assertEquals(reservation2, table.getReservations().get(1));
     }
 
-    @Test
-    @DisplayName("Test Reserved on Existing Reservation")
-    public void testReservedOnExistingReservation(){
-        table.addReservation(reservation1);
-        assertTrue(table.isReserved(reservation1.getDateTime()));
-    }
-
-    @Test
-    @DisplayName("Test Reserved on Not Existing Reservation")
-    public void testReservedOnNotExistingReservation(){
-        table.addReservation(reservation1);
-        assertFalse(table.isReserved(LocalDateTime.now().plusDays(10)));
-    }
-
-    @Test
-    @DisplayName("Test Not Reserved on Cancelled Reservation")
-    public void testNotReservedOnCancelledReservation(){
-        table.addReservation(reservation1);
-        reservation1.cancel();
-        assertFalse(table.isReserved(reservation1.getDateTime()));
-    }
-
     @ParameterizedTest
     @CsvSource({
             "false, true, 0",

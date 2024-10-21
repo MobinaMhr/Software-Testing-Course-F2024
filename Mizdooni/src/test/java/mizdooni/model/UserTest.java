@@ -119,7 +119,7 @@ public class UserTest {
     public void testCheckingCanceledReservation() {
         Reservation reservation = new Reservation(clientUser, restaurant1, table1, LocalDateTime.now());
         clientUser.addReservation(reservation);
-        clientUser.getReservation(reservation.getReservationNumber()).cancel();
+        reservation.cancel();
         assertFalse(clientUser.checkReserved(restaurant1));
     }
 
