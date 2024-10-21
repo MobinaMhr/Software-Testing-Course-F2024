@@ -62,8 +62,8 @@ public class TableTest {
             "false, false, 10",
             "true, false, 0"
     })
-    @DisplayName("shiiiiiiiiiiiiiiiiiiiiiit")
-    public void testIsReserved(boolean shouldBeCancelled, boolean expected, int offset){
+    @DisplayName("Test is Reserved Works Properly")
+    public void testIsReservedWorksProperly(boolean shouldBeCancelled, boolean expected, int offset){
         table.addReservation(reservation1);
         if (shouldBeCancelled)
             reservation1.cancel();
