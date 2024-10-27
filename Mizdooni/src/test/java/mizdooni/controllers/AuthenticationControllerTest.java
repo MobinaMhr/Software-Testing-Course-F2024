@@ -40,4 +40,13 @@ public class AuthenticationControllerTest {
         assertEquals(HttpStatus.OK, response.getStatus());
         assertEquals(true, response.isSuccess());
     }
+
+    @Test
+    void testUser_NotLoggedIn() {
+        when(userService.getCurrentUser()).thenReturn(null);
+
+        ResponseException exception = assertThrows(ResponseException.class, () -> authenticationController.user());
+        assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatus());
+        assertEquals("no user logged in", exception.getMessage());
+    }
 }
