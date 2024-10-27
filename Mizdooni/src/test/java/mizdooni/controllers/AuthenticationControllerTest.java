@@ -59,4 +59,17 @@ public class AuthenticationControllerTest {
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
         assertEquals(ControllerUtils.PARAMS_MISSING, exception.getMessage());
     }
+
+    @Test
+    void testLogin_InvalidCredentials() {
+        Map<String, String> params = new HashMap<>();
+        params.put("username", "user");
+        params.put("password", "wrongpass");
+
+        when(userService.login("user", "wrongpass")).thenReturn(false);
+
+        ResponseException exception = assertThrows(ResponseException.class, () -> authenticationController.login(params));
+        assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatus());
+        assertEquals("invalid username or password", exception.getMessage());
+    }
 }
