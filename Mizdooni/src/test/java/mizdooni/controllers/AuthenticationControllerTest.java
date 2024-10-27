@@ -11,4 +11,14 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class AuthenticationControllerTest {
+    @Mock
+    private UserService userService;
+
+    @InjectMocks
+    private AuthenticationController authenticationController;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
 }
