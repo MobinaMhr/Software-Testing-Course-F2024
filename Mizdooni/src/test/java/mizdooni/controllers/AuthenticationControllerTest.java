@@ -89,4 +89,14 @@ public class AuthenticationControllerTest {
         assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatus());
         assertEquals("invalid username or password", exception.getMessage());
     }
+
+    @Test
+    void testLogout_Successful() {
+        when(userService.logout()).thenReturn(true);
+
+        Response response = authenticationController.logout();
+        assertEquals("logout successful", response.getMessage());
+        assertEquals(HttpStatus.OK, response.getStatus());
+        assertEquals(true, response.isSuccess());
+    }
 }
