@@ -61,6 +61,23 @@ public class AuthenticationControllerTest {
     }
 
     @Test
+    void testLogin_Successful() {
+        Map<String, String> params = new HashMap<>();
+        params.put("username", "user");
+        params.put("password", "pass");
+        ;
+        when(userService.login("user", "pass")).thenReturn(true);
+        when(userService.getCurrentUser()).thenReturn(user1);
+
+        Response response = authenticationController.login(params);
+        assertEquals("login successful", response.getMessage());
+        assertEquals(user1, response.getData());
+        assertEquals(HttpStatus.OK, response.getStatus());
+        assertEquals(true, response.isSuccess());
+    }
+
+
+    @Test
     void testLogin_InvalidCredentials() {
         Map<String, String> params = new HashMap<>();
         params.put("username", "user");
