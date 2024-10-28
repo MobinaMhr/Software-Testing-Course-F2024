@@ -120,4 +120,15 @@ public class AuthenticationControllerTest {
         assertEquals(HttpStatus.OK, response.getStatus());
         assertEquals(true, response.isSuccess());
     }
+
+    @Test
+    void testValidateExistsUsername() {
+        String username = "existinguser";
+
+        when(userService.usernameExists(username)).thenReturn(true);
+
+        ResponseException exception = assertThrows(ResponseException.class, () -> authenticationController.validateUsername(username));
+        assertEquals(HttpStatus.CONFLICT, exception.getStatus());
+        assertEquals("username already exists", exception.getMessage());
+    }
 }
