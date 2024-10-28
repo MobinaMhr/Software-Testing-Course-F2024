@@ -143,4 +143,15 @@ public class AuthenticationControllerTest {
         assertEquals(HttpStatus.OK, response.getStatus());
         assertEquals(true, response.isSuccess());
     }
+
+    @Test
+    void testValidateExistingEmail() {
+        String email = "existing@example.com";
+
+        when(userService.emailExists(email)).thenReturn(true);
+
+        ResponseException exception = assertThrows(ResponseException.class, () -> authenticationController.validateEmail(email));
+        assertEquals(HttpStatus.CONFLICT, exception.getStatus());
+        assertEquals("email already registered", exception.getMessage());
+    }
 }
