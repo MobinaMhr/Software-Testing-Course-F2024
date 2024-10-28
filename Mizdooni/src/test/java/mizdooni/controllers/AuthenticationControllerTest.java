@@ -108,4 +108,16 @@ public class AuthenticationControllerTest {
         assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatus());
         assertEquals("no user logged in", exception.getMessage());
     }
+
+    @Test
+    void testValidateAvailableUsername() {
+        String username = "newuser";
+
+        when(userService.usernameExists(username)).thenReturn(false);
+
+        Response response = authenticationController.validateUsername(username);
+        assertEquals("username is available", response.getMessage());
+        assertEquals(HttpStatus.OK, response.getStatus());
+        assertEquals(true, response.isSuccess());
+    }
 }
