@@ -154,4 +154,14 @@ public class AuthenticationControllerTest {
         assertEquals(HttpStatus.CONFLICT, exception.getStatus());
         assertEquals("email already registered", exception.getMessage());
     }
+
+    @Test
+    void testSignupByMissingParams() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("username", "user");
+
+        ResponseException exception = assertThrows(ResponseException.class, () -> authenticationController.signup(params));
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+        assertEquals(ControllerUtils.PARAMS_MISSING, exception.getMessage());
+    }
 }
