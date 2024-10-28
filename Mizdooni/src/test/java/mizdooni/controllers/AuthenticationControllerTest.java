@@ -29,17 +29,17 @@ public class AuthenticationControllerTest {
         MockitoAnnotations.openMocks(this);
     }
 
-//    @Test
-//    void testUser_LoggedIn() {//TODO: should implement getters for response ?
-//
-//        when(userService.getCurrentUser()).thenReturn(user1);
-//
-//        Response response = authenticationController.user();
-//        assertEquals("current user", response.getMessage());
-//        assertEquals(user1, response.getData());
-//        assertEquals(HttpStatus.OK, response.getStatus());
-//        assertEquals(true, response.isSuccess());
-//    }
+    @Test
+    void testUser_LoggedIn() {//TODO: should implement getters for response ?
+
+        when(userService.getCurrentUser()).thenReturn(user1);
+
+        Response response = authenticationController.user();
+        assertEquals("current user", response.getMessage());
+        assertEquals(user1, response.getData());
+        assertEquals(HttpStatus.OK, response.getStatus());
+        assertEquals(true, response.isSuccess());
+    }
 
     @Test
     void testUser_NotLoggedIn() {

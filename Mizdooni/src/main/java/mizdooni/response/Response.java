@@ -19,6 +19,27 @@ public class Response {
     private boolean success;
     private String error;
     private String message;
+
+    public HttpStatus getStatus() {
+        return status;
+    }
+
+    public boolean isSuccess() {
+        return success;
+    }
+
+    public String getError() {
+        return error;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public Object getData() {
+        return data;
+    }
+
     private Object data;
 
     public Response(HttpStatus status, String message, boolean success, String error, Object data) {
