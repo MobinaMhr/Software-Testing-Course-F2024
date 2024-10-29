@@ -71,13 +71,16 @@ public class ReservationControllerTest {
     public void testFindAvailableTableFailToFindReservation() throws UserNotManager, TableNotFound, InvalidManagerRestaurant, RestaurantNotFound {
         String validDate = "2024-11-01";
         LocalDate date = LocalDate.parse(validDate, DATE_FORMATTER);
+        Exception ex = new UserNotManager();
 //        List<Table> emptyTables = new ArrayList<>();
 //        when(restaurant.getTables()).thenReturn(emptyTables);
+        when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(restaurant);
         when(reservationService.getReservations(restaurant.getId(), 1, date)).thenThrow(new UserNotManager());
         ResponseException exception = assertThrows(ResponseException.class,
                 () -> reservationController.getReservations(restaurant.getId(), 1, validDate));
-        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
-        assertEquals("restaurant not found", exception.getMessage());
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+        assertEquals(ex.getMessage(), exception.getMessage());
     }
+
 
 }
