@@ -101,8 +101,6 @@ public class ReservationControllerTest {
 
     @Test
     public void testGetCustomerReservationsSuccessfully() throws UserNotFound, UserNoAccess {
-        String validDate = "2024-11-01";
-        LocalDate date = LocalDate.parse(validDate, DATE_FORMATTER);
         List<Reservation> reservations = new ArrayList<>();
         reservations.add(reservation);
 
@@ -112,5 +110,20 @@ public class ReservationControllerTest {
         assertEquals("user reservations", response.getMessage());
         assertEquals(true, response.isSuccess());
         assertEquals(reservations, response.getData());
+    }
+
+    @Test
+    public void testGetCustomerReservationsFailure() throws UserNotFound, UserNoAccess {
+        List<Reservation> reservations = new ArrayList<>();
+        reservations.add(reservation);
+        Exception ex = new UserNotFound();
+
+        when(reservationService.getCustomerReservations(1)).thenThrow(ex);
+        ResponseException responseException = assertThrows(ResponseException.class,
+                () -> reservationController.getCustomerReservations(1));
+
+        assertEquals(HttpStatus.BAD_REQUEST, responseException.getStatus());
+        assertEquals(ex.getMessage(), responseException.getMessage());
+
     }
 }
