@@ -10,22 +10,18 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-
-public class ReviewControllerTest {
-    @Mock
-    Restaurant restaurant;
+public class ReservationControlerTest {
     @Mock
     private RestaurantService restaurantService;
 
     @Mock
-    private ReviewService reviewService;
+    private ReservationService reservationService;
 
     @InjectMocks
-    private ReviewController reviewController;
+    private ReservationController reservationController;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
     }
-
 }
