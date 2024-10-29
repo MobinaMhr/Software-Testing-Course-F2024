@@ -126,4 +126,28 @@ public class ReservationControllerTest {
         assertEquals(ex.getMessage(), responseException.getMessage());
 
     }
+
+    @Test
+    public void testFindAvailableItemsFailToParseLocalDate(){
+        String invalidDate = "2024-13-01";
+//        List<Table> emptyTables = new ArrayList<>();
+//        when(restaurant.getTables()).thenReturn(emptyTables);
+        when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(restaurant);
+        ResponseException exception = assertThrows(ResponseException.class,
+                () -> reservationController.getAvailableTimes(restaurant.getId(), 1, invalidDate));
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+        assertEquals(ControllerUtils.PARAMS_BAD_TYPE, exception.getMessage());
+    }
+
+    @Test
+    public void testFindAvailableItemsFailToFindRestaurant(){
+        String validDate = "2024-11-01";
+//        List<Table> emptyTables = new ArrayList<>();
+//        when(restaurant.getTables()).thenReturn(emptyTables);
+        when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(null);
+        ResponseException exception = assertThrows(ResponseException.class,
+                () -> reservationController.getAvailableTimes(restaurant.getId(), 1, validDate));
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+        assertEquals("restaurant not found", exception.getMessage());
+    }
 }
