@@ -1,8 +1,5 @@
 package mizdooni.controllers;
-import mizdooni.exceptions.InvalidManagerRestaurant;
-import mizdooni.exceptions.RestaurantNotFound;
-import mizdooni.exceptions.TableNotFound;
-import mizdooni.exceptions.UserNotManager;
+import mizdooni.exceptions.*;
 import mizdooni.model.*;
 import mizdooni.response.*;
 import mizdooni.response.ResponseException;
@@ -85,7 +82,6 @@ public class ReservationControllerTest {
         assertEquals(ex.getMessage(), exception.getMessage());
     }
 
-
     @Test
     public void testFindAvailableTableSuccessfully() throws UserNotManager, TableNotFound, InvalidManagerRestaurant, RestaurantNotFound {
         String validDate = "2024-11-01";
@@ -103,4 +99,18 @@ public class ReservationControllerTest {
         assertEquals(true, response.isSuccess());
     }
 
+    @Test
+    public void testGetCustomerReservationsSuccessfully() throws UserNotFound, UserNoAccess {
+        String validDate = "2024-11-01";
+        LocalDate date = LocalDate.parse(validDate, DATE_FORMATTER);
+        List<Reservation> reservations = new ArrayList<>();
+        reservations.add(reservation);
+
+        when(reservationService.getCustomerReservations(1)).thenReturn(reservations);
+        Response response = reservationController.getCustomerReservations(1);
+        assertEquals(HttpStatus.OK, response.getStatus());
+        assertEquals("user reservations", response.getMessage());
+        assertEquals(true, response.isSuccess());
+        assertEquals(reservations, response.getData());
+    }
 }
