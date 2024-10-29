@@ -1,4 +1,8 @@
 package mizdooni.controllers;
+import mizdooni.exceptions.InvalidManagerRestaurant;
+import mizdooni.exceptions.RestaurantNotFound;
+import mizdooni.exceptions.TableNotFound;
+import mizdooni.exceptions.UserNotManager;
 import mizdooni.model.*;
 import mizdooni.response.ResponseException;
 import mizdooni.service.*;
@@ -6,8 +10,12 @@ import org.junit.jupiter.api.*;
 import org.mockito.*;
 import org.springframework.http.HttpStatus;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.*;
 
+import static mizdooni.controllers.ControllerUtils.DATE_FORMATTER;
+import static mizdooni.service.ServiceUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -59,5 +67,17 @@ public class ReservationControllerTest {
         assertEquals("restaurant not found", exception.getMessage());
     }
 
+    @Test
+    public void testFindAvailableTableFailToFindReservation() throws UserNotManager, TableNotFound, InvalidManagerRestaurant, RestaurantNotFound {
+        String validDate = "2024-11-01";
+        LocalDate date = LocalDate.parse(validDate, DATE_FORMATTER);
+//        List<Table> emptyTables = new ArrayList<>();
+//        when(restaurant.getTables()).thenReturn(emptyTables);
+        when(reservationService.getReservations(restaurant.getId(), 1, date)).thenThrow(new UserNotManager());
+        ResponseException exception = assertThrows(ResponseException.class,
+                () -> reservationController.getReservations(restaurant.getId(), 1, validDate));
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+        assertEquals("restaurant not found", exception.getMessage());
+    }
 
 }
