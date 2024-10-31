@@ -7,6 +7,9 @@ import org.junit.jupiter.api.*;
 import org.mockito.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.Assert;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -70,8 +73,31 @@ public class ReviewControllerTest {
         assertEquals(exception.getMessage(), responseException.getMessage());
     }
 
-//    @Test
-//    void test() {
-//        //
-//    }
+    @Test
+    void testGetReviewsSuccessfulScenario() throws RestaurantNotFound {
+        when(restaurant.getId()).thenReturn(1);
+        when(restaurant.getName()).thenReturn("mew");
+        when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(restaurant);
+        when(reviewService.getReviews(restaurant.getId(), 1)).thenReturn(pagedReviews);
+        Response response = reviewController.getReviews(restaurant.getId(), 1);
+        String message = "reviews for restaurant (" + restaurant.getId() + "): " + restaurant.getName();
+        assertEquals(HttpStatus.OK, response.getStatus());
+        assertEquals(message, response.getMessage());
+        assertEquals(pagedReviews, response.getData());
+    }
 }
+
+
+
+//public Response getReviews(@PathVariable int restaurantId, @RequestParam int page) {
+//    Restaurant restaurant = ControllerUtils.checkRestaurant(restaurantId, restaurantService);
+//    try {
+//        PagedList<Review> reviews = reviewService.getReviews(restaurant.getId(), page);
+//        String message = "reviews for restaurant (" + restaurantId + "): " + restaurant.getName();
+//        return Response.ok(message, reviews);
+//    } catch (Exception ex) {
+//        throw new ResponseException(HttpStatus.BAD_REQUEST, ex);
+//    }
+//}
+
+
