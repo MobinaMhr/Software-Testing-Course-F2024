@@ -86,9 +86,6 @@ public class ReviewControllerTest {
         assertEquals(pagedReviews, response.getData());
     }
 
-    //Map<String, String> params = new HashMap<>();
-    //        params.put("username", "user");
-
     @Test
     void testAddReviewByMissedParams(){
         Map<String, Object> params = new HashMap<>();
@@ -101,6 +98,21 @@ public class ReviewControllerTest {
                 () -> reviewController.addReview(restaurant.getId(), params));
         assertEquals(HttpStatus.BAD_REQUEST, responseException.getStatus());
         assertEquals(ControllerUtils.PARAMS_MISSING, responseException.getMessage());
+    }
+
+    @Test
+    void testAddReviewParamConversionError(){
+        Map<String, Object> params = new HashMap<>();
+        params.put("comment", "it was awful");
+        params.put("rating", rating);
+        when(restaurant.getId()).thenReturn(1);
+        when(restaurant.getName()).thenReturn("mew");
+        when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(restaurant);
+
+        ResponseException responseException = assertThrows(ResponseException.class,
+                () -> reviewController.addReview(restaurant.getId(), params));
+        assertEquals(HttpStatus.BAD_REQUEST, responseException.getStatus());
+        assertEquals(ControllerUtils.PARAMS_BAD_TYPE, responseException.getMessage());
     }
 }
 
