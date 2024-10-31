@@ -85,6 +85,23 @@ public class ReviewControllerTest {
         assertEquals(message, response.getMessage());
         assertEquals(pagedReviews, response.getData());
     }
+
+    //Map<String, String> params = new HashMap<>();
+    //        params.put("username", "user");
+
+    @Test
+    void testAddReviewByMissedParams(){
+        Map<String, Object> params = new HashMap<>();
+        params.put("comment", "it was awful");
+        when(restaurant.getId()).thenReturn(1);
+        when(restaurant.getName()).thenReturn("mew");
+        when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(restaurant);
+
+        ResponseException responseException = assertThrows(ResponseException.class,
+                () -> reviewController.addReview(restaurant.getId(), params));
+        assertEquals(HttpStatus.BAD_REQUEST, responseException.getStatus());
+        assertEquals(ControllerUtils.PARAMS_MISSING, responseException.getMessage());
+    }
 }
 
 
