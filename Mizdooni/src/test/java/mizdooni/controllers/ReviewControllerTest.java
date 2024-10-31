@@ -1,5 +1,5 @@
 package mizdooni.controllers;
-import mizdooni.exceptions.RestaurantNotFound;
+import mizdooni.exceptions.*;
 import mizdooni.model.*;
 import mizdooni.response.*;
 import mizdooni.service.*;
@@ -25,6 +25,8 @@ public class ReviewControllerTest {
     private User user1;
     @Mock
     private User user2;
+    @Mock
+    UserService userService;
 //    @Mock
     private Rating rating;
     @Mock
@@ -114,7 +116,42 @@ public class ReviewControllerTest {
         assertEquals(HttpStatus.BAD_REQUEST, responseException.getStatus());
         assertEquals(ControllerUtils.PARAMS_BAD_TYPE, responseException.getMessage());
     }
+
+    @Test
+    void testAddReviewAddingFailure() throws UserNotFound, ManagerCannotReview, UserHasNotReserved, RestaurantNotFound, InvalidReviewRating {
+        Map<String, Object> params = new HashMap<>();
+        String comment = "it was awful";
+        params.put("comment", comment);
+
+        Map<String, Number> ratingMap = Map.of(
+                "food", 4.5,
+                "service", 3,
+                "ambiance", 5,
+                "overall", 4
+        );
+        params.put("rating", ratingMap);
+
+        when(restaurant.getId()).thenReturn(1);
+        when(restaurant.getName()).thenReturn("mew");
+        when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(restaurant);
+
+        Exception ex = new UserNotFound();
+        doThrow(ex).when(reviewService).addReview(eq(restaurant.getId()), any(Rating.class), eq(comment));
+
+        ResponseException responseException = assertThrows(ResponseException.class,
+                () -> reviewController.addReview(restaurant.getId(), params)
+        );
+
+        assertEquals(HttpStatus.BAD_REQUEST, responseException.getStatus());
+        assertEquals("User not found.", responseException.getMessage());
+    }
+
 }
+//
+//public double food;
+//public double service;
+//public double ambiance;
+//public double overall;
 
 
 
