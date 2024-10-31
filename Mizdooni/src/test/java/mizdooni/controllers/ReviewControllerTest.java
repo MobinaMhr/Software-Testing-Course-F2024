@@ -58,17 +58,17 @@ public class ReviewControllerTest {
         assertEquals("restaurant not found", exception.getMessage());
     }
 
-//    @Test //TODO::Impossible Scenario
-//    void testFailingInGetReviews() throws RestaurantNotFound {
-//        when(restaurant.getId()).thenReturn(1);
-//        when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(restaurant);
-//        Exception exception = new RestaurantNotFound();
-//        when(reviewService.getReviews(restaurant.getId(), 1)).thenThrow(exception);
-//        ResponseException responseException = assertThrows(ResponseException.class,
-//                () -> reviewController.getReviews(restaurant.getId(), 1));
-//        assertEquals(HttpStatus.BAD_REQUEST, responseException.getStatus());
-//        assertEquals(exception.getMessage(), responseException.getMessage());
-//    }
+    @Test //TODO::Impossible Scenario
+    void testFailingInGetReviews() throws RestaurantNotFound {
+        when(restaurant.getId()).thenReturn(1);
+        when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(restaurant);
+        Exception exception = new RestaurantNotFound();
+        when(reviewService.getReviews(restaurant.getId(), 1)).thenThrow(exception);
+        ResponseException responseException = assertThrows(ResponseException.class,
+                () -> reviewController.getReviews(restaurant.getId(), 1));
+        assertEquals(HttpStatus.BAD_REQUEST, responseException.getStatus());
+        assertEquals(exception.getMessage(), responseException.getMessage());
+    }
 
 //    @Test
 //    void test() {
