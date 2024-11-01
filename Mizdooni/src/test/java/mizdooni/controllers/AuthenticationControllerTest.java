@@ -164,4 +164,19 @@ public class AuthenticationControllerTest {
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
         assertEquals(ControllerUtils.PARAMS_MISSING, exception.getMessage());
     }
+
+    @Test
+    void testSignupByBadParams(){
+        Map<String, Object> params = new HashMap<>();
+        params.put("username", "user");
+        params.put("password", "pass");
+        params.put("email", "user@example.com");
+        params.put("role", User.Role.client);
+        params.put("address", "kargar");
+
+        ResponseException responseException = assertThrows(ResponseException.class, () -> authenticationController.signup(params));
+        assertEquals(HttpStatus.BAD_REQUEST, responseException.getStatus());
+        assertEquals(ControllerUtils.PARAMS_BAD_TYPE, responseException.getMessage());
+
+    }
 }
