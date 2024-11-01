@@ -1,4 +1,5 @@
 package mizdooni.controllers;
+import mizdooni.database.Database;
 import mizdooni.exceptions.*;
 import mizdooni.model.*;
 import mizdooni.response.*;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import static mizdooni.service.ServiceUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -135,16 +137,17 @@ public class ReviewControllerTest {
         when(restaurant.getName()).thenReturn("mew");
         when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(restaurant);
 
-        Exception ex = new UserNotFound();
-        doThrow(ex).when(reviewService).addReview(eq(restaurant.getId()), any(Rating.class), eq(comment));
+        Exception ex = new UserHasNotReserved();
+        doThrow(ex).when(reviewService).addReview(anyInt(), any(), anyString());
 
         ResponseException responseException = assertThrows(ResponseException.class,
                 () -> reviewController.addReview(restaurant.getId(), params)
         );
 
         assertEquals(HttpStatus.BAD_REQUEST, responseException.getStatus());
-        assertEquals("User not found.", responseException.getMessage());
+        assertEquals(ex.getMessage(), responseException.getMessage());
     }
+
 
 }
 //
