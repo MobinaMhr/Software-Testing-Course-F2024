@@ -1,4 +1,8 @@
 package mizdooni.controllers;
+import mizdooni.exceptions.DuplicatedUsernameEmail;
+import mizdooni.exceptions.InvalidEmailFormat;
+import mizdooni.exceptions.InvalidUsernameFormat;
+import mizdooni.model.Address;
 import mizdooni.model.User;
 import mizdooni.service.*;
 import mizdooni.database.*;
@@ -10,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 public class AuthenticationControllerTest {
@@ -200,6 +206,27 @@ public class AuthenticationControllerTest {
 
     }
 
+    @Test
+    void testSignupDuplicateCredentials() throws DuplicatedUsernameEmail, InvalidUsernameFormat, InvalidEmailFormat {
+        Map<String, Object> params = new HashMap<>();
+        params.put("username", "user");
+        params.put("password", "pass");
+        params.put("email", "user@example.com");
+        params.put("role", "client");
+        Map<String, String> addr = Map.of(
+                "country" , "Iran",
+                "city", "Tehran"
+        );
+        params.put("address", addr);
 
+        Exception ex = new DuplicatedUsernameEmail();
+        doThrow(ex).when(userService).signup(eq("user"), eq("pass"), eq("user@example.com"),
+                any(Address.class), eq(User.Role.client));
+
+        ResponseException responseException = assertThrows(ResponseException.class, () -> authenticationController.signup(params));
+        assertEquals(HttpStatus.BAD_REQUEST, responseException.getStatus());
+        assertEquals(ex.getMessage(), responseException.getMessage());
+
+    }
 
 }
