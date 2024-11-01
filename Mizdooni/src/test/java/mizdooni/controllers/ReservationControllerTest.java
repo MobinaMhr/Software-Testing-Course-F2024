@@ -14,6 +14,7 @@ import java.time.LocalTime;
 import java.util.*;
 
 import static mizdooni.controllers.ControllerUtils.DATE_FORMATTER;
+import static mizdooni.controllers.ControllerUtils.PARAMS_MISSING;
 import static mizdooni.service.ServiceUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -207,6 +208,22 @@ public class ReservationControllerTest {
 
         assertEquals(HttpStatus.OK, response.getStatus());
         assertEquals("reservation cancelled", response.getMessage());
+    }
+
+    @Test
+    void testAddReservationByMissingParams(){
+        String validDate = "2024-11-01";
+        Map<String, String> params = new HashMap<>();
+        params.put("datetime", validDate);
+
+        when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(restaurant);
+
+        ResponseException responseException = assertThrows(ResponseException.class,() ->
+                reservationController.addReservation(restaurant.getId(), params));
+
+        assertEquals(HttpStatus.BAD_REQUEST, responseException.getStatus());
+        assertEquals(PARAMS_MISSING, responseException.getMessage());
+
     }
 
 }
