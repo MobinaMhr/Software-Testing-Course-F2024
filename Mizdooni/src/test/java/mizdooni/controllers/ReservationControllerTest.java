@@ -13,8 +13,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 
-import static mizdooni.controllers.ControllerUtils.DATE_FORMATTER;
-import static mizdooni.controllers.ControllerUtils.PARAMS_MISSING;
+import static mizdooni.controllers.ControllerUtils.*;
 import static mizdooni.service.ServiceUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -223,6 +222,23 @@ public class ReservationControllerTest {
 
         assertEquals(HttpStatus.BAD_REQUEST, responseException.getStatus());
         assertEquals(PARAMS_MISSING, responseException.getMessage());
+
+    }
+
+    @Test
+    void testAddReservationByBadParamsFormat(){
+        String validDate = "2024-11-01";
+        Map<String, String> params = new HashMap<>();
+        params.put("datetime", validDate);
+        params.put("people", "ten");
+
+        when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(restaurant);
+
+        ResponseException responseException = assertThrows(ResponseException.class,() ->
+                reservationController.addReservation(restaurant.getId(), params));
+
+        assertEquals(HttpStatus.BAD_REQUEST, responseException.getStatus());
+        assertEquals(PARAMS_BAD_TYPE, responseException.getMessage());
 
     }
 
