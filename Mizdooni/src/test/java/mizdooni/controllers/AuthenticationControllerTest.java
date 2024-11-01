@@ -82,7 +82,6 @@ public class AuthenticationControllerTest {
         assertEquals(true, response.isSuccess());
     }
 
-
     @Test
     void testLogin_InvalidCredentials() {
         Map<String, String> params = new HashMap<>();
@@ -116,6 +115,7 @@ public class AuthenticationControllerTest {
     }
 
     @Test
+    @DisplayName("Test Validate Available Username")
     void testValidateAvailableUsername() {
         String username = "newuser";
 
@@ -128,17 +128,20 @@ public class AuthenticationControllerTest {
     }
 
     @Test
-    void testValidateExistsUsername() {
+    @DisplayName("Test Validate Existing Username")
+    void testValidateExistingUsername() {
         String username = "existinguser";
 
         when(userService.usernameExists(username)).thenReturn(true);
 
-        ResponseException exception = assertThrows(ResponseException.class, () -> authenticationController.validateUsername(username));
+        ResponseException exception = assertThrows(ResponseException.class,
+                () -> authenticationController.validateUsername(username));
         assertEquals(HttpStatus.CONFLICT, exception.getStatus());
         assertEquals("username already exists", exception.getMessage());
     }
 
     @Test
+    @DisplayName("Test Validate Available Email")
     void testValidateAvailableEmail() {
         String email = "new@example.com";
 
@@ -151,22 +154,26 @@ public class AuthenticationControllerTest {
     }
 
     @Test
+    @DisplayName("Test Validate Existing Email")
     void testValidateExistingEmail() {
         String email = "existing@example.com";
 
         when(userService.emailExists(email)).thenReturn(true);
 
-        ResponseException exception = assertThrows(ResponseException.class, () -> authenticationController.validateEmail(email));
+        ResponseException exception = assertThrows(ResponseException.class,
+                () -> authenticationController.validateEmail(email));
         assertEquals(HttpStatus.CONFLICT, exception.getStatus());
         assertEquals("email already registered", exception.getMessage());
     }
 
     @Test
-    void testSignupByMissingParams() {
+    @DisplayName("Test Signup by Many Missing Params")
+    void testSignupByManyMissingParams() {
         Map<String, Object> params = new HashMap<>();
         params.put("username", "user");
 
-        ResponseException exception = assertThrows(ResponseException.class, () -> authenticationController.signup(params));
+        ResponseException exception = assertThrows(ResponseException.class,
+                () -> authenticationController.signup(params));
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
         assertEquals(ControllerUtils.PARAMS_MISSING, exception.getMessage());
     }
@@ -180,15 +187,15 @@ public class AuthenticationControllerTest {
         params.put("role", "client");
         params.put("address", "kargar");
 
-        ResponseException responseException = assertThrows(ResponseException.class, () -> authenticationController.signup(params));
+        ResponseException responseException = assertThrows(ResponseException.class,
+                () -> authenticationController.signup(params));
         assertEquals(HttpStatus.BAD_REQUEST, responseException.getStatus());
         assertEquals(ControllerUtils.PARAMS_BAD_TYPE, responseException.getMessage());
-
     }
 
-
     @Test
-    void testSignupByEmptyParam(){
+    @DisplayName("Test Signup by an Empty Param")
+    void testSignupByAnEmptyParam(){
         Map<String, Object> params = new HashMap<>();
         params.put("username", "user");
         params.put("password", "");
@@ -200,14 +207,15 @@ public class AuthenticationControllerTest {
         );
         params.put("address", addr);
 
-        ResponseException responseException = assertThrows(ResponseException.class, () -> authenticationController.signup(params));
+        ResponseException responseException = assertThrows(ResponseException.class,
+                () -> authenticationController.signup(params));
         assertEquals(HttpStatus.BAD_REQUEST, responseException.getStatus());
         assertEquals(ControllerUtils.PARAMS_MISSING, responseException.getMessage());
-
     }
 
     @Test
-    void testSignupDuplicateCredentials() throws DuplicatedUsernameEmail, InvalidUsernameFormat, InvalidEmailFormat {
+    void testSignupDuplicateCredentials()
+            throws DuplicatedUsernameEmail, InvalidUsernameFormat, InvalidEmailFormat {
         Map<String, Object> params = new HashMap<>();
         params.put("username", "user");
         params.put("password", "pass");
@@ -220,17 +228,22 @@ public class AuthenticationControllerTest {
         params.put("address", addr);
 
         Exception ex = new DuplicatedUsernameEmail();
-        doThrow(ex).when(userService).signup(eq("user"), eq("pass"), eq("user@example.com"),
-                any(Address.class), eq(User.Role.client));
+        doThrow(ex).when(userService).signup(
+                eq("user"), eq("pass"),
+                eq("user@example.com"), any(Address.class),
+                eq(User.Role.client)
+        );
 
-        ResponseException responseException = assertThrows(ResponseException.class, () -> authenticationController.signup(params));
+        ResponseException responseException = assertThrows(ResponseException.class,
+                () -> authenticationController.signup(params));
         assertEquals(HttpStatus.BAD_REQUEST, responseException.getStatus());
         assertEquals(ex.getMessage(), responseException.getMessage());
 
     }
 
     @Test
-    void testSignupSuccessfully() throws DuplicatedUsernameEmail, InvalidUsernameFormat, InvalidEmailFormat {
+    void testSignupSuccessfully()
+            throws DuplicatedUsernameEmail, InvalidUsernameFormat, InvalidEmailFormat {
         Map<String, Object> params = new HashMap<>();
         params.put("username", "user");
         params.put("password", "pass");
@@ -249,7 +262,5 @@ public class AuthenticationControllerTest {
         assertEquals(user1, response.getData());
 
     }
-
-
 
 }
