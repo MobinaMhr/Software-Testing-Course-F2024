@@ -57,6 +57,19 @@ public class ReservationControllerTest {
     }
 
     @Test
+    @DisplayName("Test Find Successfully Available Table with Null Date")
+    public void testSuccessfullyFindAvailableTableWithNullDate(){
+        String nullDate = null;
+        when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(restaurant);
+        reservationController.getReservations(restaurant.getId(), 1, nullDate);
+
+        Response response = reservationController.getReservations(restaurant.getId(), 1, nullDate);
+        assertEquals(HttpStatus.OK, response.getStatus());
+        assertEquals("restaurant table reservations", response.getMessage());
+        assertEquals(true, response.isSuccess());
+    }
+
+    @Test
     @DisplayName("Test Find Available Table Fail to Find Restaurant: Restaurant not found")
     public void testFindAvailableTableFailToFindRestaurant(){
         String validDate = "2024-11-01";
