@@ -9,6 +9,7 @@ import org.mockito.*;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -150,4 +151,21 @@ public class ReservationControllerTest {
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
         assertEquals("restaurant not found", exception.getMessage());
     }
+
+    @Test
+    void testGetAvailableTimesFailToFindItems() throws DateTimeInThePast, RestaurantNotFound, BadPeopleNumber {
+        Exception ex = new DateTimeInThePast();
+        String validDate = "2024-11-01";
+//        List<Table> emptyTables = new ArrayList<>();
+//        when(restaurant.getTables()).thenReturn(emptyTables);
+        when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(restaurant);
+        when(reservationService.getAvailableTimes(eq(restaurant.getId()), eq(1), any(LocalDate.class))).thenThrow(ex);
+
+        ResponseException exception = assertThrows(ResponseException.class,
+                () -> reservationController.getAvailableTimes(restaurant.getId(), 1, validDate));
+
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+        assertEquals(ex.getMessage(), exception.getMessage());
+    }
+
 }
