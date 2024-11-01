@@ -129,7 +129,7 @@ public class ReservationControllerTest {
     }
 
     @Test
-    public void testFindAvailableItemsFailToParseLocalDate(){
+    public void testFindAvailableTimesFailToParseLocalDate(){
         String invalidDate = "2024-13-01";
 //        List<Table> emptyTables = new ArrayList<>();
 //        when(restaurant.getTables()).thenReturn(emptyTables);
@@ -141,7 +141,7 @@ public class ReservationControllerTest {
     }
 
     @Test
-    public void testFindAvailableItemsFailToFindRestaurant(){
+    public void testFindAvailableTimesFailToFindRestaurant(){
         String validDate = "2024-11-01";
 //        List<Table> emptyTables = new ArrayList<>();
 //        when(restaurant.getTables()).thenReturn(emptyTables);
@@ -166,6 +166,27 @@ public class ReservationControllerTest {
 
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
         assertEquals(ex.getMessage(), exception.getMessage());
+    }
+
+    @Test
+    void testGetAvailableTimesSuccessful() throws DateTimeInThePast, RestaurantNotFound, BadPeopleNumber {
+        List<LocalTime> responseTimes = new ArrayList<>(List.of(
+                LocalTime.of(10, 30),
+                LocalTime.of(14, 45),
+                LocalTime.of(18, 0)
+        ));
+        String validDate = "2024-11-01";
+//        List<Table> emptyTables = new ArrayList<>();
+//        when(restaurant.getTables()).thenReturn(emptyTables);
+        when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(restaurant);
+        when(reservationService.getAvailableTimes(eq(restaurant.getId()), eq(1),
+                any(LocalDate.class))).thenReturn(responseTimes);
+
+        Response response = reservationController.getAvailableTimes(restaurant.getId(), 1, validDate);
+
+        assertEquals(HttpStatus.OK, response.getStatus());
+        assertEquals("available times", response.getMessage());
+        assertEquals(responseTimes, response.getData());
     }
 
 }
