@@ -229,4 +229,27 @@ public class AuthenticationControllerTest {
 
     }
 
+    @Test
+    void testSignupSuccessfully() throws DuplicatedUsernameEmail, InvalidUsernameFormat, InvalidEmailFormat {
+        Map<String, Object> params = new HashMap<>();
+        params.put("username", "user");
+        params.put("password", "pass");
+        params.put("email", "user@example.com");
+        params.put("role", "client");
+        Map<String, String> addr = Map.of(
+                "country" , "Iran",
+                "city", "Tehran"
+        );
+        params.put("address", addr);
+        when(userService.getCurrentUser()).thenReturn(user1);
+
+        Response response = authenticationController.signup(params);
+        assertEquals(HttpStatus.OK, response.getStatus());
+        assertEquals("signup successful", response.getMessage());
+        assertEquals(user1, response.getData());
+
+    }
+
+
+
 }
