@@ -179,7 +179,8 @@ public class AuthenticationControllerTest {
     }
 
     @Test
-    void testSignupByBadParams(){
+    @DisplayName("Test Signup by Bad Param")
+    void testSignupByBadParam(){
         Map<String, Object> params = new HashMap<>();
         params.put("username", "user");
         params.put("password", "pass");
@@ -214,7 +215,8 @@ public class AuthenticationControllerTest {
     }
 
     @Test
-    void testSignupDuplicateCredentials()
+    @DisplayName("Test Signup with Duplicate Credentials")
+    void testSignupWithDuplicateCredentials()
             throws DuplicatedUsernameEmail, InvalidUsernameFormat, InvalidEmailFormat {
         Map<String, Object> params = new HashMap<>();
         params.put("username", "user");
@@ -242,7 +244,8 @@ public class AuthenticationControllerTest {
     }
 
     @Test
-    void testSignupSuccessfully()
+    @DisplayName("Test Successful Signup")
+    void testSuccessfulSignup()
             throws DuplicatedUsernameEmail, InvalidUsernameFormat, InvalidEmailFormat {
         Map<String, Object> params = new HashMap<>();
         params.put("username", "user");
@@ -260,7 +263,6 @@ public class AuthenticationControllerTest {
         assertEquals(HttpStatus.OK, response.getStatus());
         assertEquals("signup successful", response.getMessage());
         assertEquals(user1, response.getData());
-
     }
 
 }
