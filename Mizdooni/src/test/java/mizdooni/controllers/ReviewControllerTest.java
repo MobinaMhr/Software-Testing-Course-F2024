@@ -57,6 +57,7 @@ public class ReviewControllerTest {
     }
 
     @Test
+    @DisplayName("Test GetReviews Fail to Find Restaurant")
     void testGetReviewsFailToFindRestaurant() {
         when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(null);
         ResponseException exception = assertThrows(ResponseException.class,
@@ -65,7 +66,8 @@ public class ReviewControllerTest {
         assertEquals("restaurant not found", exception.getMessage());
     }
 
-    @Test //TODO::Impossible Scenario
+    @Test // Note that this was impossible scenario in code
+    @DisplayName("Test Failing in GetReviews")
     void testFailingInGetReviews() throws RestaurantNotFound {
         when(restaurant.getId()).thenReturn(1);
         when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(restaurant);
@@ -78,6 +80,7 @@ public class ReviewControllerTest {
     }
 
     @Test
+    @DisplayName("Test GetReviews Successful Scenario")
     void testGetReviewsSuccessfulScenario() throws RestaurantNotFound {
         when(restaurant.getId()).thenReturn(1);
         when(restaurant.getName()).thenReturn("mew");
@@ -91,6 +94,7 @@ public class ReviewControllerTest {
     }
 
     @Test
+    @DisplayName("Test AddReview by Missed Params")
     void testAddReviewByMissedParams(){
         Map<String, Object> params = new HashMap<>();
         params.put("comment", "it was awful");
@@ -105,6 +109,7 @@ public class ReviewControllerTest {
     }
 
     @Test
+    @DisplayName("Test AddReview Param Conversion Error")
     void testAddReviewParamConversionError(){
         Map<String, Object> params = new HashMap<>();
         params.put("comment", "it was awful");
@@ -120,7 +125,10 @@ public class ReviewControllerTest {
     }
 
     @Test
-    void testAddReviewAddingFailure() throws UserNotFound, ManagerCannotReview, UserHasNotReserved, RestaurantNotFound, InvalidReviewRating {
+    @DisplayName("Test AddReview with Failure")
+    void testAddReviewWithFailure()
+            throws UserNotFound, ManagerCannotReview, UserHasNotReserved,
+            RestaurantNotFound, InvalidReviewRating {
         Map<String, Object> params = new HashMap<>();
         String comment = "it was awful";
         params.put("comment", comment);
@@ -149,7 +157,8 @@ public class ReviewControllerTest {
     }
 
     @Test
-    void testAddReviewSuccessfully(){
+    @DisplayName("Test Successful Add Review")
+    void testSuccessfulAddReview(){
         Map<String, Object> params = new HashMap<>();
         String comment = "it was awful";
         params.put("comment", comment);
@@ -173,23 +182,5 @@ public class ReviewControllerTest {
     }
 
 }
-//
-//public double food;
-//public double service;
-//public double ambiance;
-//public double overall;
-
-
-
-//public Response getReviews(@PathVariable int restaurantId, @RequestParam int page) {
-//    Restaurant restaurant = ControllerUtils.checkRestaurant(restaurantId, restaurantService);
-//    try {
-//        PagedList<Review> reviews = reviewService.getReviews(restaurant.getId(), page);
-//        String message = "reviews for restaurant (" + restaurantId + "): " + restaurant.getName();
-//        return Response.ok(message, reviews);
-//    } catch (Exception ex) {
-//        throw new ResponseException(HttpStatus.BAD_REQUEST, ex);
-//    }
-//}
 
 
