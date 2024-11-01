@@ -36,8 +36,8 @@ public class AuthenticationControllerTest {
     }
 
     @Test
-    void testUser_LoggedIn() {//TODO: should implement getters for response ?
-
+    @DisplayName("Test LoggedIn User")
+    void testLoggedInUser() {
         when(userService.getCurrentUser()).thenReturn(user1);
 
         Response response = authenticationController.user();
@@ -48,26 +48,31 @@ public class AuthenticationControllerTest {
     }
 
     @Test
-    void testUser_NotLoggedIn() {
+    @DisplayName("Test not LoggedIn User")
+    void testNotLoggedInUser() {
         when(userService.getCurrentUser()).thenReturn(null);
 
-        ResponseException exception = assertThrows(ResponseException.class, () -> authenticationController.user());
+        ResponseException exception = assertThrows(ResponseException.class,
+                () -> authenticationController.user());
         assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatus());
         assertEquals("no user logged in", exception.getMessage());
     }
 
     @Test
-    void testLogin_MissingParams() {
+    @DisplayName("Test Login with Missing Params")
+    void testLoginWithMissingParams() {
         Map<String, String> params = new HashMap<>();
         params.put("username", "user");
 
-        ResponseException exception = assertThrows(ResponseException.class, () -> authenticationController.login(params));
+        ResponseException exception = assertThrows(ResponseException.class,
+                () -> authenticationController.login(params));
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
         assertEquals(ControllerUtils.PARAMS_MISSING, exception.getMessage());
     }
 
     @Test
-    void testLogin_Successful() {
+    @DisplayName("Test Login Successfully")
+    void testLoginSuccessfully() {
         Map<String, String> params = new HashMap<>();
         params.put("username", "user");
         params.put("password", "pass");
@@ -83,20 +88,23 @@ public class AuthenticationControllerTest {
     }
 
     @Test
-    void testLogin_InvalidCredentials() {
+    @DisplayName("Test Login with Invalid Credentials")
+    void testLoginWithInvalidCredentials() {
         Map<String, String> params = new HashMap<>();
         params.put("username", "user");
         params.put("password", "wrongpass");
 
         when(userService.login("user", "wrongpass")).thenReturn(false);
 
-        ResponseException exception = assertThrows(ResponseException.class, () -> authenticationController.login(params));
+        ResponseException exception = assertThrows(ResponseException.class,
+                () -> authenticationController.login(params));
         assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatus());
         assertEquals("invalid username or password", exception.getMessage());
     }
 
     @Test
-    void testLogout_Successful() {
+    @DisplayName("Test Logout Successfully")
+    void testLogoutSuccessfully() {
         when(userService.logout()).thenReturn(true);
 
         Response response = authenticationController.logout();
@@ -106,10 +114,12 @@ public class AuthenticationControllerTest {
     }
 
     @Test
-    void testLogout_NotLoggedIn() {
+    @DisplayName("Test Logout not Logged in User")
+    void testLogoutNotLoggedInUser() {
         when(userService.logout()).thenReturn(false);
 
-        ResponseException exception = assertThrows(ResponseException.class, () -> authenticationController.logout());
+        ResponseException exception = assertThrows(ResponseException.class,
+                () -> authenticationController.logout());
         assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatus());
         assertEquals("no user logged in", exception.getMessage());
     }
