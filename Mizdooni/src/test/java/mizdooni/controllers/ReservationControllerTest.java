@@ -201,4 +201,12 @@ public class ReservationControllerTest {
         assertEquals(ex.getMessage(), responseException.getMessage());
     }
 
+    @Test
+    void testCancelReservationSuccessful() throws ReservationCannotBeCancelled, UserNotFound, ReservationNotFound {
+        Response response = reservationController.cancelReservation(1);
+
+        assertEquals(HttpStatus.OK, response.getStatus());
+        assertEquals("reservation cancelled", response.getMessage());
+    }
+
 }
