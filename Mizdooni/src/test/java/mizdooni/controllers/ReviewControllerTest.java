@@ -148,6 +148,29 @@ public class ReviewControllerTest {
         assertEquals(ex.getMessage(), responseException.getMessage());
     }
 
+    @Test
+    void testAddReviewSuccessfully(){
+        Map<String, Object> params = new HashMap<>();
+        String comment = "it was awful";
+        params.put("comment", comment);
+
+        Map<String, Number> ratingMap = Map.of(
+                "food", 4.5,
+                "service", 3,
+                "ambiance", 5,
+                "overall", 4
+        );
+        params.put("rating", ratingMap);
+
+        when(restaurant.getId()).thenReturn(1);
+        when(restaurant.getName()).thenReturn("mew");
+        when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(restaurant);
+
+        Response response = reviewController.addReview(restaurant.getId(), params);
+
+        assertEquals(HttpStatus.OK, response.getStatus());
+        assertEquals("review added successfully", response.getMessage());
+    }
 
 }
 //
