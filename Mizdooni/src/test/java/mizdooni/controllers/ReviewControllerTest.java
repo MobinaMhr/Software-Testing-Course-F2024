@@ -57,7 +57,7 @@ public class ReviewControllerTest {
     }
 
     @Test
-    @DisplayName("Test GetReviews Fail to Find Restaurant")
+    @DisplayName("Test Get Reviews Fail to Find Restaurant")
     void testGetReviewsFailToFindRestaurant() {
         when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(null);
         ResponseException exception = assertThrows(ResponseException.class,
@@ -67,7 +67,7 @@ public class ReviewControllerTest {
     }
 
     @Test // Note that this was impossible scenario in code
-    @DisplayName("Test Failing in GetReviews")
+    @DisplayName("Test Failing in Get Reviews")
     void testFailingInGetReviews() throws RestaurantNotFound {
         when(restaurant.getId()).thenReturn(1);
         when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(restaurant);
@@ -80,7 +80,7 @@ public class ReviewControllerTest {
     }
 
     @Test
-    @DisplayName("Test GetReviews Successful Scenario")
+    @DisplayName("Test Get Reviews Successful Scenario")
     void testGetReviewsSuccessfulScenario() throws RestaurantNotFound {
         when(restaurant.getId()).thenReturn(1);
         when(restaurant.getName()).thenReturn("mew");
@@ -94,7 +94,7 @@ public class ReviewControllerTest {
     }
 
     @Test
-    @DisplayName("Test AddReview by Missed Params")
+    @DisplayName("Test Add Review by Missed Params")
     void testAddReviewByMissedParams(){
         Map<String, Object> params = new HashMap<>();
         params.put("comment", "it was awful");
@@ -109,7 +109,7 @@ public class ReviewControllerTest {
     }
 
     @Test
-    @DisplayName("Test AddReview Param Conversion Error")
+    @DisplayName("Test Add Review Param Conversion Error")
     void testAddReviewParamConversionError(){
         Map<String, Object> params = new HashMap<>();
         params.put("comment", "it was awful");
@@ -125,7 +125,7 @@ public class ReviewControllerTest {
     }
 
     @Test
-    @DisplayName("Test AddReview with Failure")
+    @DisplayName("Test Add Review with Failure")
     void testAddReviewWithFailure()
             throws UserNotFound, ManagerCannotReview, UserHasNotReserved,
             RestaurantNotFound, InvalidReviewRating {
