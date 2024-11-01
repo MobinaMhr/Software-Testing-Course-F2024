@@ -8,6 +8,7 @@ import org.junit.jupiter.api.*;
 import org.mockito.*;
 import org.springframework.http.HttpStatus;
 
+import java.lang.reflect.Executable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -227,10 +228,10 @@ public class ReservationControllerTest {
 
     @Test
     void testAddReservationByBadParamsFormat(){
-        String validDate = "2024-11-01";
+        String validDate = "2024-11-01 10:52";
         Map<String, String> params = new HashMap<>();
         params.put("datetime", validDate);
-        params.put("people", "ten");
+        params.put("people", "shesh");
 
         when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(restaurant);
 
@@ -239,6 +240,25 @@ public class ReservationControllerTest {
 
         assertEquals(HttpStatus.BAD_REQUEST, responseException.getStatus());
         assertEquals(PARAMS_BAD_TYPE, responseException.getMessage());
+
+    }
+
+    @Test
+    void testAddReservationFailure() throws UserNotFound, DateTimeInThePast, TableNotFound, ReservationNotInOpenTimes, ManagerReservationNotAllowed, RestaurantNotFound, InvalidWorkingTime {
+        Exception ex = new InvalidWorkingTime();
+        String validDate = "2024-11-01 10:52";
+        Map<String, String> params = new HashMap<>();
+        params.put("datetime", validDate);
+        params.put("people", "10");
+
+        when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(restaurant);
+        when(reservationService.reserveTable(eq(restaurant.getId()), eq(10), any(LocalDateTime.class))).thenThrow(ex);
+
+        ResponseException responseException = assertThrows(ResponseException.class,() ->
+                reservationController.addReservation(restaurant.getId(), params));
+
+        assertEquals(HttpStatus.BAD_REQUEST, responseException.getStatus());
+        assertEquals(ex.getMessage(), responseException.getMessage());
 
     }
 
