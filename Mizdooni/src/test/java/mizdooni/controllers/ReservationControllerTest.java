@@ -46,10 +46,9 @@ public class ReservationControllerTest {
     }
 
     @Test
+    @DisplayName("Test Find Available Table Fail to Parse Local Date: Incorrect month")
     public void testFindAvailableTableFailToParseLocalDate(){
         String invalidDate = "2024-13-01";
-//        List<Table> emptyTables = new ArrayList<>();
-//        when(restaurant.getTables()).thenReturn(emptyTables);
         when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(restaurant);
         ResponseException exception = assertThrows(ResponseException.class,
                 () -> reservationController.getReservations(restaurant.getId(), 1, invalidDate));
@@ -58,10 +57,9 @@ public class ReservationControllerTest {
     }
 
     @Test
+    @DisplayName("Test Find Available Table Fail to Find Restaurant: Restaurant not found")
     public void testFindAvailableTableFailToFindRestaurant(){
         String validDate = "2024-11-01";
-//        List<Table> emptyTables = new ArrayList<>();
-//        when(restaurant.getTables()).thenReturn(emptyTables);
         when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(null);
         ResponseException exception = assertThrows(ResponseException.class,
                 () -> reservationController.getReservations(restaurant.getId(), 1, validDate));
@@ -70,12 +68,13 @@ public class ReservationControllerTest {
     }
 
     @Test
-    public void testFindAvailableTableFailToFindReservation() throws UserNotManager, TableNotFound, InvalidManagerRestaurant, RestaurantNotFound {
+    @DisplayName("Test Find Available Table Fail to Find Reservation")
+    public void testFindAvailableTableFailToFindReservation()
+            throws UserNotManager, TableNotFound, InvalidManagerRestaurant, RestaurantNotFound {
         String validDate = "2024-11-01";
         LocalDate date = LocalDate.parse(validDate, DATE_FORMATTER);
         Exception ex = new UserNotManager();
-//        List<Table> emptyTables = new ArrayList<>();
-//        when(restaurant.getTables()).thenReturn(emptyTables);
+
         when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(restaurant);
         when(reservationService.getReservations(restaurant.getId(), 1, date)).thenThrow(new UserNotManager());
         ResponseException exception = assertThrows(ResponseException.class,
@@ -85,13 +84,14 @@ public class ReservationControllerTest {
     }
 
     @Test
-    public void testFindAvailableTableSuccessfully() throws UserNotManager, TableNotFound, InvalidManagerRestaurant, RestaurantNotFound {
+    @DisplayName("Test Find Available Table Successfully")
+    public void testFindAvailableTableSuccessfully()
+            throws UserNotManager, TableNotFound, InvalidManagerRestaurant, RestaurantNotFound {
         String validDate = "2024-11-01";
         LocalDate date = LocalDate.parse(validDate, DATE_FORMATTER);
         List<Reservation> reservations = new ArrayList<>();
         reservations.add(reservation);
-//        List<Table> emptyTables = new ArrayList<>();
-//        when(restaurant.getTables()).thenReturn(emptyTables);
+
         when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(restaurant);
         when(reservationService.getReservations(restaurant.getId(), 1, date)).thenReturn(reservations);
         Response response = reservationController.getReservations(restaurant.getId(), 1, validDate);
@@ -102,9 +102,9 @@ public class ReservationControllerTest {
     }
 
     @Test
+    @DisplayName("Test Get Customer Reservations Successfully")
     public void testGetCustomerReservationsSuccessfully() throws UserNotFound, UserNoAccess {
-        List<Reservation> reservations = new ArrayList<>();
-        reservations.add(reservation);
+        List<Reservation> reservations = new ArrayList<>(Collections.singletonList(reservation));
 
         when(reservationService.getCustomerReservations(1)).thenReturn(reservations);
         Response response = reservationController.getCustomerReservations(1);
@@ -115,9 +115,8 @@ public class ReservationControllerTest {
     }
 
     @Test
+    @DisplayName("Test Get Customer Reservations Failure")
     public void testGetCustomerReservationsFailure() throws UserNotFound, UserNoAccess {
-        List<Reservation> reservations = new ArrayList<>();
-        reservations.add(reservation);
         Exception ex = new UserNotFound();
 
         when(reservationService.getCustomerReservations(1)).thenThrow(ex);
@@ -130,10 +129,10 @@ public class ReservationControllerTest {
     }
 
     @Test
+    @DisplayName("Test Find Available Times Fail to Parse Local Date: Incorrect month")
     public void testFindAvailableTimesFailToParseLocalDate(){
         String invalidDate = "2024-13-01";
-//        List<Table> emptyTables = new ArrayList<>();
-//        when(restaurant.getTables()).thenReturn(emptyTables);
+
         when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(restaurant);
         ResponseException exception = assertThrows(ResponseException.class,
                 () -> reservationController.getAvailableTimes(restaurant.getId(), 1, invalidDate));
@@ -142,10 +141,10 @@ public class ReservationControllerTest {
     }
 
     @Test
+    @DisplayName("Test Find Available Times Fail to Find Restaurant")
     public void testFindAvailableTimesFailToFindRestaurant(){
         String validDate = "2024-11-01";
-//        List<Table> emptyTables = new ArrayList<>();
-//        when(restaurant.getTables()).thenReturn(emptyTables);
+
         when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(null);
         ResponseException exception = assertThrows(ResponseException.class,
                 () -> reservationController.getAvailableTimes(restaurant.getId(), 1, validDate));
@@ -154,11 +153,12 @@ public class ReservationControllerTest {
     }
 
     @Test
-    void testGetAvailableTimesFailToFindItems() throws DateTimeInThePast, RestaurantNotFound, BadPeopleNumber {
+    @DisplayName("Test Get Available Times Fail to Find Items")
+    void testGetAvailableTimesFailToFindItems()
+            throws DateTimeInThePast, RestaurantNotFound, BadPeopleNumber {
         Exception ex = new DateTimeInThePast();
         String validDate = "2024-11-01";
-//        List<Table> emptyTables = new ArrayList<>();
-//        when(restaurant.getTables()).thenReturn(emptyTables);
+
         when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(restaurant);
         when(reservationService.getAvailableTimes(eq(restaurant.getId()), eq(1), any(LocalDate.class))).thenThrow(ex);
 
@@ -170,15 +170,16 @@ public class ReservationControllerTest {
     }
 
     @Test
-    void testGetAvailableTimesSuccessful() throws DateTimeInThePast, RestaurantNotFound, BadPeopleNumber {
+    @DisplayName("Test Get Available Times Successful")
+    void testGetAvailableTimesSuccessful()
+            throws DateTimeInThePast, RestaurantNotFound, BadPeopleNumber {
         List<LocalTime> responseTimes = new ArrayList<>(List.of(
                 LocalTime.of(10, 30),
                 LocalTime.of(14, 45),
                 LocalTime.of(18, 0)
         ));
         String validDate = "2024-11-01";
-//        List<Table> emptyTables = new ArrayList<>();
-//        when(restaurant.getTables()).thenReturn(emptyTables);
+
         when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(restaurant);
         when(reservationService.getAvailableTimes(eq(restaurant.getId()), eq(1),
                 any(LocalDate.class))).thenReturn(responseTimes);
@@ -191,7 +192,9 @@ public class ReservationControllerTest {
     }
 
     @Test
-    void testCancelReservationFailure() throws ReservationCannotBeCancelled, UserNotFound, ReservationNotFound {
+    @DisplayName("Test Cancel Reservation Failure")
+    void testCancelReservationFailure()
+            throws ReservationCannotBeCancelled, UserNotFound, ReservationNotFound {
         Exception ex = new ReservationCannotBeCancelled();
         doThrow(ex).when(reservationService).cancelReservation(eq(1));
 
@@ -203,14 +206,16 @@ public class ReservationControllerTest {
     }
 
     @Test
-    void testCancelReservationSuccessful() throws ReservationCannotBeCancelled, UserNotFound, ReservationNotFound {
+    @DisplayName("Test Cancel Reservation Successful")
+    void testCancelReservationSuccessful()
+            throws ReservationCannotBeCancelled, UserNotFound, ReservationNotFound {
         Response response = reservationController.cancelReservation(1);
-
         assertEquals(HttpStatus.OK, response.getStatus());
         assertEquals("reservation cancelled", response.getMessage());
     }
 
     @Test
+    @DisplayName("Test Add Reservation by Missing Params")
     void testAddReservationByMissingParams(){
         String validDate = "2024-11-01";
         Map<String, String> params = new HashMap<>();
@@ -227,6 +232,7 @@ public class ReservationControllerTest {
     }
 
     @Test
+    @DisplayName("Test Add Reservation by Bad Params Format")
     void testAddReservationByBadParamsFormat(){
         String validDate = "2024-11-01 10:52";
         Map<String, String> params = new HashMap<>();
@@ -244,15 +250,20 @@ public class ReservationControllerTest {
     }
 
     @Test
-    void testAddReservationFailure() throws UserNotFound, DateTimeInThePast, TableNotFound, ReservationNotInOpenTimes, ManagerReservationNotAllowed, RestaurantNotFound, InvalidWorkingTime {
+    @DisplayName("Test Add Reservation Failure")
+    void testAddReservationFailure()
+            throws UserNotFound, DateTimeInThePast, TableNotFound, ReservationNotInOpenTimes,
+            ManagerReservationNotAllowed, RestaurantNotFound, InvalidWorkingTime {
         Exception ex = new InvalidWorkingTime();
         String validDate = "2024-11-01 10:52";
+
         Map<String, String> params = new HashMap<>();
         params.put("datetime", validDate);
         params.put("people", "10");
 
         when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(restaurant);
-        when(reservationService.reserveTable(eq(restaurant.getId()), eq(10), any(LocalDateTime.class))).thenThrow(ex);
+        when(reservationService.reserveTable(eq(restaurant.getId()), eq(10),
+                any(LocalDateTime.class))).thenThrow(ex);
 
         ResponseException responseException = assertThrows(ResponseException.class,() ->
                 reservationController.addReservation(restaurant.getId(), params));
@@ -263,8 +274,12 @@ public class ReservationControllerTest {
     }
 
     @Test
-    void testAddReservationSuccessful() throws UserNotFound, DateTimeInThePast, TableNotFound, ReservationNotInOpenTimes, ManagerReservationNotAllowed, RestaurantNotFound, InvalidWorkingTime {
+    @DisplayName("Test Add Reservation Successful")
+    void testAddReservationSuccessful()
+            throws UserNotFound, DateTimeInThePast, TableNotFound, ReservationNotInOpenTimes,
+            ManagerReservationNotAllowed, RestaurantNotFound, InvalidWorkingTime {
         String validDate = "2024-11-01 10:52";
+
         Map<String, String> params = new HashMap<>();
         params.put("datetime", validDate);
         params.put("people", "10");
