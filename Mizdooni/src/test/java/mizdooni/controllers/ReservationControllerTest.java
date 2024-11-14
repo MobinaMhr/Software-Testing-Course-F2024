@@ -307,5 +307,23 @@ public class ReservationControllerTest {
         assertEquals("reservation done", response.getMessage());
         assertEquals(reservation, response.getData());
     }
+    @Test
+    void test() throws UserNotFound, DateTimeInThePast, TableNotFound, ReservationNotInOpenTimes,
+            ManagerReservationNotAllowed, RestaurantNotFound, InvalidWorkingTime {
+        //
+        Map<String, String> params = new HashMap<>();
+        params.put("people", "10");
+        params.put("datetime", "2024-11-01 10:52");
+        when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(restaurant);
+        when(reservationService.reserveTable(eq(restaurant.getId()), eq(10), any(LocalDateTime.class))).
+                thenReturn(reservation);
+
+        Response response = reservationController.addReservation(restaurant.getId(), params);
+
+        assertEquals(HttpStatus.OK, response.getStatus());
+        assertEquals("reservation done", response.getMessage());
+        assertEquals(reservation, response.getData());
+
+    }
 
 }

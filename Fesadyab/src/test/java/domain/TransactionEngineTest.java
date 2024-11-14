@@ -24,6 +24,8 @@ public class TransactionEngineTest {
         debitTxn2 = new Transaction(){{transactionId = 6; accountId = 10; amount = 900; isDebit = true;}};
     }
 
+    // ---------------------------------------- Average Transaction Amount ---------------------------------------- //
+
     @Test
     void testAverageTransactionAmountWithEmptyHistory() {
         TransactionEngine engine = new TransactionEngine();
@@ -69,6 +71,8 @@ public class TransactionEngineTest {
                 "Average amount should be 200 for transaction history with single transaction");
     }
 
+    // ---------------------------------------- Transaction Pattern Above Threshold ---------------------------------------- //
+
     @Test
     void testTransactionPatternAboveThresholdWithEmptyHistory() {
         TransactionEngine engine = new TransactionEngine();
@@ -89,9 +93,10 @@ public class TransactionEngineTest {
         assertEquals(0, txnPattern);
     }
 
-    // RENAME
+    // ---------------------------------------- Get Transaction Pattern Above Threshold ---------------------------------------- //
+
     @Test
-    void testGetTransactionPatternAboveThreshold1() {
+    void testGetTransactionPatternAboveThresholdWithBellowThresholdTxn() {
         TransactionEngine engine = new TransactionEngine();
 
         engine.transactionHistory.add(txn1);
@@ -102,8 +107,8 @@ public class TransactionEngineTest {
         assertEquals(0, txnPattern);
     }
 
-    @Test
-    void testGetTransactionPatternAboveThreshold2() {
+    @Test // Txn2 amount > threshold(200)
+    void testGetTransactionPatternAboveThresholdWithSingleTxnAboveThreshold() {
         TransactionEngine engine = new TransactionEngine();
 
         engine.transactionHistory.add(txn1);
@@ -114,8 +119,12 @@ public class TransactionEngineTest {
         assertEquals(100, txnPattern);
     }
 
+
+    // TODO::
+    // Txn2 and Txn3 amount > threshold(200)
+    // Doesn't go to else if
     @Test
-    void testGetTransactionPatternAboveThreshold3() {
+    void testGetTransactionPatternAboveThresholdWithMultipleTransactionsAboveThreshold11111111111111111() {
         TransactionEngine engine = new TransactionEngine();
 
         engine.transactionHistory.add(txn1);
@@ -126,9 +135,10 @@ public class TransactionEngineTest {
         int txnPattern = engine.getTransactionPatternAboveThreshold(threshold);
         assertEquals(100, txnPattern);
     }
-
+    // Txn2 and Txn4 amount > threshold(200)
+    // Doesn't go to else if
     @Test
-    void testGetTransactionPatternAboveThreshold4() {
+    void testGetTransactionPatternAboveThresholdWithMultipleTransactionsAboveThreshold2222222222222222222() {
         TransactionEngine engine = new TransactionEngine();
 
         engine.transactionHistory.add(txn1);
@@ -140,9 +150,10 @@ public class TransactionEngineTest {
         assertEquals(0, txnPattern);
     }
 
-    // RENAME
+    // ---------------------------------------- Detect Fraudulent Transaction ---------------------------------------- //
+
     @Test
-    void testDetectFraudulentTransaction1() {
+    void testDetectFraudulentTransactionOnNonDebitTxn() {
         TransactionEngine engine = new TransactionEngine();
 
         engine.transactionHistory.add(txn1);
@@ -152,7 +163,7 @@ public class TransactionEngineTest {
     }
 
     @Test
-    void testDetectFraudulentTransaction2() {
+    void testDetectFraudulentTransactionOnFraudulentTxn() {
         TransactionEngine engine = new TransactionEngine();
 
         engine.transactionHistory.add(txn1);
@@ -163,7 +174,7 @@ public class TransactionEngineTest {
     }
 
     @Test
-    void testDetectFraudulentTransaction3() {
+    void testDetectFraudulentTransactionOnUnFraudulentTxn() {
         TransactionEngine engine = new TransactionEngine();
 
         engine.transactionHistory.add(txn1);
@@ -173,8 +184,10 @@ public class TransactionEngineTest {
         assertEquals(500, fraudScore);
     }
 
+    // ---------------------------------------- Add Transaction And Detect Fraud ---------------------------------------- //
+
     @Test
-    void testAddTransactionAndDetectFraud1() {
+    void testAddTransactionAndDetectFraudOnNonDebitTxn() {
         TransactionEngine engine = new TransactionEngine();
 
         engine.transactionHistory.add(txn1);
@@ -183,8 +196,8 @@ public class TransactionEngineTest {
         assertEquals(0, fraudScore);
     }
 
-    @Test
-    void testAddTransactionAndDetectFraud2() {
+    @Test // Fraudulent score = 500
+    void testAddTransactionAndDetectFraudOnFraudulentTxn() {
         TransactionEngine engine = new TransactionEngine();
 
         engine.transactionHistory.add(txn1);
@@ -194,38 +207,25 @@ public class TransactionEngineTest {
         assertEquals(500, fraudScore);
     }
 
-    @Test
-    void testAddTransactionAndDetectFraud3() {
+    @Test // txn2 is bellow threshold
+    void testAddTransactionAndDetectFraudOnUnFraudulentTxn222222() {
         TransactionEngine engine = new TransactionEngine();
 
         engine.transactionHistory.add(txn1);
-        engine.transactionHistory.add(txn2);
-
-        int fraudScore = engine.addTransactionAndDetectFraud(debitTxn2);
-        assertEquals(500, fraudScore);
-    }
-
-    @Test
-    void testAddTransactionAndDetectFraud4() {
-        TransactionEngine engine = new TransactionEngine();
-
-        engine.transactionHistory.add(txn1);
-        engine.transactionHistory.add(txn2);
+        engine.transactionHistory.add(txn2); // is less than threshold
 
         int fraudScore = engine.addTransactionAndDetectFraud(debitTxn1);
         assertEquals(0, fraudScore);
     }
 
-    @Test
-    void testAddTransactionAndDetectFraud5() {
+    @Test // txn4 is above threshold
+    void testAddTransactionAndDetectFraudOnUnFraudulentTxn333333() {
         TransactionEngine engine = new TransactionEngine();
 
         engine.transactionHistory.add(txn1);
-        engine.transactionHistory.add(txn4);
+        engine.transactionHistory.add(txn4); // is more than threshold
 
         int fraudScore = engine.addTransactionAndDetectFraud(debitTxn1);
         assertEquals(950, fraudScore);
     }
 }
-
-
