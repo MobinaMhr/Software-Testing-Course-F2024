@@ -119,12 +119,10 @@ public class TransactionEngineTest {
         assertEquals(100, txnPattern);
     }
 
-
-    // TODO::
     // Txn2 and Txn3 amount > threshold(200)
     // Doesn't go to else if
     @Test
-    void testGetTransactionPatternAboveThresholdWithMultipleTransactionsAboveThreshold11111111111111111() {
+    void testGetTransactionPatternAboveThresholdWithMultipleTransactionsAboveThresholdWithNotSameDiffToPrevious() {
         TransactionEngine engine = new TransactionEngine();
 
         engine.transactionHistory.add(txn1);
@@ -136,9 +134,9 @@ public class TransactionEngineTest {
         assertEquals(100, txnPattern);
     }
     // Txn2 and Txn4 amount > threshold(200)
-    // Doesn't go to else if
+    // goes to else if
     @Test
-    void testGetTransactionPatternAboveThresholdWithMultipleTransactionsAboveThreshold2222222222222222222() {
+    void testGetTransactionPatternAboveThresholdWithMultipleTransactionsAboveThresholdWithSameDiffToPrevious() {
         TransactionEngine engine = new TransactionEngine();
 
         engine.transactionHistory.add(txn1);
@@ -208,7 +206,7 @@ public class TransactionEngineTest {
     }
 
     @Test // txn2 is bellow threshold
-    void testAddTransactionAndDetectFraudOnUnFraudulentTxn222222() {
+    void testAddTransactionAndDetectFraudOnUnFraudulentTxnOtherTxnBellowThreshold() {
         TransactionEngine engine = new TransactionEngine();
 
         engine.transactionHistory.add(txn1);
@@ -219,7 +217,7 @@ public class TransactionEngineTest {
     }
 
     @Test // txn4 is above threshold
-    void testAddTransactionAndDetectFraudOnUnFraudulentTxn333333() {
+    void testAddTransactionAndDetectFraudOnUnFraudulentTxnOtherTxnAboveThreshold() {
         TransactionEngine engine = new TransactionEngine();
 
         engine.transactionHistory.add(txn1);
