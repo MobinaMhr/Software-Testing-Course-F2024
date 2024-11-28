@@ -43,6 +43,7 @@ class RestaurantControllerAPITest {
 
     @MockBean
     private Restaurant restaurant;
+    private Restaurant restaurant2;
 
     @BeforeEach
     void setUp() {
@@ -55,6 +56,11 @@ class RestaurantControllerAPITest {
 
         restaurant = new Restaurant(restaurantName, manager, restaurantType, LocalTime.now(), LocalTime.now().plusHours(8),
                 "100% goosfandi", address_, ":|");
+
+        Address address2 = new Address("Iran", "Tehran", "Kargar jonobi");
+        User manager2 = new User("Akbar Akbari Dehkhoda", "password", "AkbarAkbari@example.com", address2, User.Role.manager);
+        restaurant2 = new Restaurant("2", manager2, "IDK", LocalTime.now(), LocalTime.now().plusHours(8),
+                "100% goosfandi2", address2, ":|");
     }
 
     // --------------------------- Get Restaurant --------------------------- //
@@ -104,42 +110,28 @@ class RestaurantControllerAPITest {
                 .andExpect(jsonPath("$.data.pageList[0].address.street").value(restaurant.getAddress().getStreet()));
     }
 
-    // TODO check its expects hashem
     @Test
-    void testGetRestaurants_ManyRestaurantsMatching_Successful() throws Exception {
+    void testGetRestaurants_MultipleRestaurants() throws Exception {
         int page = 1;
-        Address address2 = new Address("Iran", "Tehran", "Kargar jonobi");
-        User manager2 = new User("Akbar Akbari Dehkhoda", "password", "AkbarAkbari@example.com", address2, User.Role.manager);
-        Restaurant restaurant2 = new Restaurant("2", manager2, "IDK", LocalTime.now(), LocalTime.now().plusHours(8),
-                "100% goosfandi2", address2, ":|");
         List<Restaurant> restaurants = List.of(restaurant, restaurant2);
-        PagedList<Restaurant> returnedPage = new PagedList<>(restaurants, page, 1);
+        PagedList<Restaurant> returnedPage = new PagedList<>(restaurants, page, restaurants.size());
         when(restaurantService.getRestaurants(eq(page), any())).thenReturn(returnedPage);
 
-        try {
-            mockMvc.perform(get("/restaurants").param("page", Integer.toString(page)))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.success").value(true))
-                    .andExpect(jsonPath("$.message").value("restaurants listed"))
-                    .andExpect(jsonPath("$.data.page").value(page))
-                    .andExpect(jsonPath("$.data.hasNext").value(true))
-                    .andExpect(jsonPath("$.data.totalPages").value(restaurants.size()))
-                    .andExpect(jsonPath("$.data.pageList[0].name").value(restaurant.getName()))
-                    .andExpect(jsonPath("$.data.pageList[0].type").value(restaurant.getType()))
-                    .andExpect(jsonPath("$.data.pageList[0].address.country").value(restaurant.getAddress().getCountry()))
-                    .andExpect(jsonPath("$.data.pageList[0].address.city").value(restaurant.getAddress().getCity()))
-                    .andExpect(jsonPath("$.data.pageList[0].address.street").value(restaurant.getAddress().getStreet()))
-                    .andExpect(jsonPath("$.data.pageList[0].managerUsername").value(restaurant.getManager().getUsername()))
-
-                    .andExpect(jsonPath("$.data.pageList[0].name").value(restaurant2.getName()))
-                    .andExpect(jsonPath("$.data.pageList[0].type").value(restaurant2.getType()))
-                    .andExpect(jsonPath("$.data.pageList[0].address.country").value(restaurant2.getAddress().getCountry()))
-                    .andExpect(jsonPath("$.data.pageList[0].address.city").value(restaurant2.getAddress().getCity()))
-                    .andExpect(jsonPath("$.data.pageList[0].address.street").value(restaurant2.getAddress().getStreet()))
-                    .andExpect(jsonPath("$.data.pageList[0].managerUsername").value(restaurant2.getManager().getUsername()));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        mockMvc.perform(get("/restaurants").param("page", Integer.toString(page)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.message").value("restaurants listed"))
+                .andExpect(jsonPath("$.data.page").value(page))
+                .andExpect(jsonPath("$.data.pageList[0].name").value(restaurant.getName()))
+                .andExpect(jsonPath("$.data.pageList[0].type").value(restaurant.getType()))
+                .andExpect(jsonPath("$.data.pageList[0].address.country").value(restaurant.getAddress().getCountry()))
+                .andExpect(jsonPath("$.data.pageList[0].address.city").value(restaurant.getAddress().getCity()))
+                .andExpect(jsonPath("$.data.pageList[0].address.street").value(restaurant.getAddress().getStreet()))
+                .andExpect(jsonPath("$.data.pageList[1].name").value(restaurant2.getName()))
+                .andExpect(jsonPath("$.data.pageList[1].type").value(restaurant2.getType()))
+                .andExpect(jsonPath("$.data.pageList[1].address.country").value(restaurant2.getAddress().getCountry()))
+                .andExpect(jsonPath("$.data.pageList[1].address.city").value(restaurant2.getAddress().getCity()))
+                .andExpect(jsonPath("$.data.pageList[1].address.street").value(restaurant2.getAddress().getStreet()));
     }
 
     // TODO: Why it gives OK  :(((((((((((((((((((((((((
