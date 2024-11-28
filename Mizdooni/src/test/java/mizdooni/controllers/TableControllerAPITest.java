@@ -40,19 +40,11 @@ import static mizdooni.controllers.ControllerUtils.PARAMS_MISSING;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
-import static org.springframework.mock.http.server.reactive.MockServerHttpRequest.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.request;
-import static org.assertj.core.api.Assertions.*;
 
-///////////////
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.core.type.TypeReference;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(TableController.class)
@@ -190,8 +182,6 @@ public class TableControllerAPITest {
 
         performOnMvc(url, mapper.writeValueAsString(params))
                 .andExpect(status().isBadRequest());
-//                .andExpect(jsonPath("$.success").value(false))
-//                .andExpect(jsonPath("$.message").value(PARAMS_MISSING));
     }
 
     @Test
@@ -222,10 +212,9 @@ public class TableControllerAPITest {
                 .andExpect(jsonPath("$.success").value(false))
                 .andExpect(jsonPath("$.message").value(PARAMS_BAD_TYPE));
     }
-
-    // TODO:: user or manager
+    
     @Test
-    @DisplayName("Getting result of addTable with not logged in user")
+    @DisplayName("Getting result of addTable with user who is not manager")
     public void testAddTables_NoLoggedInUser_UserNotManager() throws Exception {
         url += "/" + restaurant.getId();
         Map<String, String> params = Map.of(
