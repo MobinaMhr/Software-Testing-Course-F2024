@@ -277,6 +277,11 @@ public class RestaurantControllerAPITest {
     public void testValidateRestaurantName_ExistingRestaurantName(){
         fail("empty");
     }
+    @Test
+    @DisplayName("validate unique restaurant name")
+    public void testValidateRestaurantName_UniqueRestaurantName(){
+        fail("empty");
+    }
 // --------------------------- Get Restaurant Types --------------------------- //
 // --------------------------- Get Restaurant Locations --------------------------- //
 
