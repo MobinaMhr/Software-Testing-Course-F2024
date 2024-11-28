@@ -204,6 +204,12 @@ public class RestaurantControllerAPITest {
     public void testGetManagerRestaurants_CatchDbNullPointerExeption(){
         fail("empty");
     }
+
+    @Test
+    @DisplayName("success scenario")
+    public void testGetManagerRestaurants_Success(){
+        fail("empty");
+    }
 // --------------------------- Add Restaurant --------------------------- //
 // --------------------------- Validate Restaurant Name --------------------------- //
 // --------------------------- Get Restaurant Types --------------------------- //
