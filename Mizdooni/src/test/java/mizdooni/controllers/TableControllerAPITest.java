@@ -122,13 +122,13 @@ public class TableControllerAPITest {
     // --------------------------- Get Table --------------------------- //
 
     @Test
-    @DisplayName("Performing the GET request without the Id parameter")
+    @DisplayName("Getting result of getTable without the id parameter")
     public void testGetTables_MissingRestaurantIdParam_NotFound() throws Exception {
         performOnMvc(url).andExpect(status().isNotFound());
     }
 
     @Test
-    @DisplayName("")
+    @DisplayName("Getting result of getTable with invalid id type")
     public void testGetTables_InvalidRestaurantIdType_BadRequest() throws Exception {
         url += "/Invalid_Restaurant_Id_Type";
         performOnMvc(url)
@@ -136,7 +136,7 @@ public class TableControllerAPITest {
     }
 
     @Test
-    @DisplayName("")
+    @DisplayName("Getting result of getTable with non existing restaurant id")
     public void testGetTables_NonExistingRestaurant_NotFound() throws Exception {
         int restaurantId = 1500;
         url += "/" + restaurantId;
@@ -148,7 +148,7 @@ public class TableControllerAPITest {
     }
 
     @Test
-    @DisplayName("")
+    @DisplayName("Getting result of getTable with successful scenario")
     public void testGetTables_ExistingRestaurant_Successful() throws Exception {
         url += "/" + restaurant.getId();
 
@@ -162,14 +162,14 @@ public class TableControllerAPITest {
     }
 
     @Test
-    public void testAddTable_MissingRestaurantIdParam_SuccessfulResponse() throws Exception {
+    public void testAddTable_MissingRestaurantIdParam_Successful() throws Exception {
         performOnMvc(url).andExpect(status().isNotFound());
     }
 
     // --------------------------- Add Table --------------------------- //
 
     @Test
-    @DisplayName("")
+    @DisplayName("Getting result of addTable with empty params")
     public void testAddTable_EmptyParams_ParamsMissing() throws Exception {
         url += "/" + restaurant.getId();
         Map<String, String> params = Map.of();
@@ -181,7 +181,7 @@ public class TableControllerAPITest {
     }
 
     @Test
-    @DisplayName("")
+    @DisplayName("Getting result of addTable with invalid id type")
     public void testAddTables_InvalidRestaurantIdType_BadRequest() throws Exception {
         url += "/Invalid_Restaurant_Id_Type";
         Map<String, String> params = Map.of(
@@ -195,7 +195,7 @@ public class TableControllerAPITest {
     }
 
     @Test
-    @DisplayName("")
+    @DisplayName("Getting result of addTable with non existing restaurant id")
     public void testAddTables_NonExistingRestaurant_NotFound() throws Exception {
         int restaurantId = 1500;
         url += "/" + restaurantId;
@@ -210,8 +210,8 @@ public class TableControllerAPITest {
     }
 
     @Test
-    @DisplayName("")
-    public void testAddTables_wrongParam_BadRequest() throws Exception {
+    @DisplayName("Getting result of addTable with wrong param type")
+    public void testAddTables_wrongParamType_BadRequest() throws Exception {
         url += "/" + restaurant.getId();
         Map<String, String> params = Map.of(
                 "seatsNumber", "first"
@@ -223,8 +223,9 @@ public class TableControllerAPITest {
                 .andExpect(jsonPath("$.message").value(PARAMS_BAD_TYPE));
     }
 
+    // TODO:: user or manager
     @Test
-    @DisplayName("")
+    @DisplayName("Getting result of addTable with not logged in user")
     public void testAddTables_NoLoggedInUser_UserNotManager() throws Exception {
         url += "/" + restaurant.getId();
         Map<String, String> params = Map.of(
@@ -242,7 +243,7 @@ public class TableControllerAPITest {
     }
 
     @Test
-    @DisplayName("")
+    @DisplayName("Getting result of addTable with invalid manager")
     public void testAddTables_InvalidManager_InvalidManagerRestaurant() throws Exception {
         url += "/" + restaurant.getId();
         Map<String, String> params = Map.of(
@@ -260,7 +261,7 @@ public class TableControllerAPITest {
     }
 
     @Test
-    @DisplayName("")
+    @DisplayName("Getting result of addTable with successful scenario")
     public void testAddTable_CorrectParams_Successful() throws Exception {
         url += "/" + restaurant.getId();
         Map<String, String> params = Map.of(
