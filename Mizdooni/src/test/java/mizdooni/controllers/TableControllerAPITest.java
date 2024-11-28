@@ -212,7 +212,7 @@ public class TableControllerAPITest {
                 .andExpect(jsonPath("$.success").value(false))
                 .andExpect(jsonPath("$.message").value(PARAMS_BAD_TYPE));
     }
-    
+
     @Test
     @DisplayName("Getting result of addTable with user who is not manager")
     public void testAddTables_NoLoggedInUser_UserNotManager() throws Exception {
