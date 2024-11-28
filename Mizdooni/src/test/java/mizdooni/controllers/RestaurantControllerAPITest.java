@@ -256,6 +256,11 @@ public class RestaurantControllerAPITest {
     public void testAddRestaurant_DuplicateRestaurantName(){
         fail("empty");
     }
+    @Test
+    @DisplayName("add restaurant by no logged in user or not manager user")
+    public void testAddRestaurant_BadLoggedInUser(){
+        fail("empty");
+    }
 // --------------------------- Validate Restaurant Name --------------------------- //
 // --------------------------- Get Restaurant Types --------------------------- //
 // --------------------------- Get Restaurant Locations --------------------------- //
