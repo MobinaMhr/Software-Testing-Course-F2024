@@ -246,6 +246,11 @@ public class RestaurantControllerAPITest {
     public void testAddRestaurant_BadParamsAddr(){
         fail("empty");
     }
+    @Test
+    @DisplayName("param doesn't exist in controlerUtils")
+    public void testAddRestaurant_NotExistingParam(){
+        fail("empty");
+    }
 // --------------------------- Validate Restaurant Name --------------------------- //
 // --------------------------- Get Restaurant Types --------------------------- //
 // --------------------------- Get Restaurant Locations --------------------------- //
