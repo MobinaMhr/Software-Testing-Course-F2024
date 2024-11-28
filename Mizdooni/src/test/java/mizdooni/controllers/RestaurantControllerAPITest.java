@@ -294,5 +294,14 @@ public class RestaurantControllerAPITest {
         fail("empty");
     }
 // --------------------------- Get Restaurant Locations --------------------------- //
-
+    @Test
+    @DisplayName("get restaurant locations from null db")
+    public void testGetRestaurantLocations_FromNullDb(){
+        fail("empty");
+    }
+    @Test
+    @DisplayName("get restaurant locations successfully")
+    public void testGetRestaurantLocations_Successfull(){
+        fail("empty");
+    }
 }
