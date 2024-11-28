@@ -211,6 +211,16 @@ public class RestaurantControllerAPITest {
         fail("empty");
     }
 // --------------------------- Add Restaurant --------------------------- //
+    @Test
+    @DisplayName("missing params")
+    public void testAddRestaurant_MissingParams(){
+        fail("empty");
+    }
+    @Test
+    @DisplayName("bad params:localTime bad format")
+    public void testAddRestaurant_BadParamsLocalTimeBadFormat(){
+        fail("empty");
+    }
 // --------------------------- Validate Restaurant Name --------------------------- //
 // --------------------------- Get Restaurant Types --------------------------- //
 // --------------------------- Get Restaurant Locations --------------------------- //
