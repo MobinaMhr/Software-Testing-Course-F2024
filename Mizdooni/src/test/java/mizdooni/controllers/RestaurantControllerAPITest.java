@@ -251,6 +251,11 @@ public class RestaurantControllerAPITest {
     public void testAddRestaurant_NotExistingParam(){
         fail("empty");
     }
+    @Test
+    @DisplayName("add duplicated restaurant")
+    public void testAddRestaurant_DuplicateRestaurantName(){
+        fail("empty");
+    }
 // --------------------------- Validate Restaurant Name --------------------------- //
 // --------------------------- Get Restaurant Types --------------------------- //
 // --------------------------- Get Restaurant Locations --------------------------- //
