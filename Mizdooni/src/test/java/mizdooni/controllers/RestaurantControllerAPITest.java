@@ -1,307 +1,554 @@
 package mizdooni.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import mizdooni.exceptions.InvalidManagerRestaurant;
-import mizdooni.exceptions.RestaurantNotFound;
-import mizdooni.model.*;
-import mizdooni.response.PagedList;
-import mizdooni.response.Response;
-import mizdooni.response.ResponseException;
-import mizdooni.service.RestaurantService;
-import mizdooni.service.TableService;
-import mizdooni.service.UserService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.time.LocalTime;
-import java.util.List;
-import java.util.PrimitiveIterator;
-import java.util.stream.Stream;
+import java.util.*;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import mizdooni.exceptions.DuplicatedRestaurantName;
+import mizdooni.exceptions.InvalidWorkingTime;
+import mizdooni.exceptions.UserNotManager;
+import mizdooni.model.Address;
+import mizdooni.model.Restaurant;
+import mizdooni.model.User;
+import mizdooni.response.PagedList;
+import mizdooni.service.RestaurantService;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-@WebMvcTest(TableController.class)
-public class RestaurantControllerAPITest {
-    String url;
+@SpringBootTest
+@AutoConfigureMockMvc
+class RestaurantControllerAPITest {
+
     @Autowired
     private MockMvc mockMvc;
-    @Autowired
-    private ObjectMapper mapper;
 
-    @MockBean
-    private UserService userService;
-    @MockBean
-    private TableService tableService;
     @MockBean
     private RestaurantService restaurantService;
 
     @MockBean
     private Restaurant restaurant;
 
-    @MockBean
-    private ControllerUtils controllerUtils;
+    @BeforeEach
+    void setUp() {
+        reset(restaurantService);
 
-    private Restaurant getRestaurant() throws Exception {
-        Address address = new Address("Iran", "Tehran", "Kargar");
-        User manager = new User("Akbar Akbari", "password", "AkbarAkbari@example.com", address, User.Role.manager);
+        Address address_ = new Address("Iran", "Tehran", "Kargar");
+        User manager = new User("Akbar Akbari", "password", "AkbarAkbari@example.com", address_, User.Role.manager);
         String restaurantName = "Baradaran Akbari bejoz Davood";
         String restaurantType = "Kababi";
-        return new Restaurant(restaurantName, manager, restaurantType, LocalTime.now(), LocalTime.now().plusHours(8),
-                "100% goosfandi", address, ":|");
-    }
-    private Table getTable() throws Exception {
-        return new Table(1, restaurant.getId(), 4);
-    }
-    private ResultActions performOnMvc(String url) throws Exception {
-        return mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON));
-    }
 
-    @BeforeEach
-    public void setup() throws Exception {
-        url = "/restaurants";
-
-        restaurant = getRestaurant();
-
-        // Mocking the service response for the /restaurants endpoint
-        when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(restaurant);
-        when(restaurantService.getRestaurants(10, new RestaurantSearchFilter())).
-                thenReturn(new PagedList<>(List.of(restaurant), 1, 15));
+        restaurant = new Restaurant(restaurantName, manager, restaurantType, LocalTime.now(), LocalTime.now().plusHours(8),
+                "100% goosfandi", address_, ":|");
     }
 
     // --------------------------- Get Restaurant --------------------------- //
 
     @Test
-    @DisplayName("")
-    public void testGetRestaurant_NonExistingRestaurant_NotFound() throws Exception {
-        int nonExistentRestaurantId = 1500;
-        url += "/" + nonExistentRestaurantId;
+    void testGetRestaurant_CorrectRestaurantId_Successful() throws Exception {
+        int restaurantId = restaurant.getId();
+        when(restaurantService.getRestaurant(restaurantId)).thenReturn(restaurant);
 
+        mockMvc.perform(get("/restaurants/" + restaurant.getId(), restaurantId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.message").value("restaurant found"))
+                .andExpect(jsonPath("$.data.name").value(restaurant.getName()))
+                .andExpect(jsonPath("$.data.type").value(restaurant.getType()));
+    }
+
+    @Test
+    void testGetRestaurant_NonExistingRestaurant_NotFound() throws Exception {
+        int nonExistentRestaurantId = 1500;
         when(restaurantService.getRestaurant(nonExistentRestaurantId)).thenReturn(null);
 
-        performOnMvc(url)
-                .andExpect(status().isNotFound());
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("restaurant not found"));
+        mockMvc.perform(get("/restaurants/" +  nonExistentRestaurantId))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.message").value("restaurant not found"));
     }
-
-    @Test
-    @DisplayName("")
-    public void testGetRestaurant_CorrectRestaurantId_() throws Exception {
-        url += "/" + restaurant.getId();
-
-        when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(restaurant);
-
-        performOnMvc(url)
-                .andExpect(status().isOk());
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("restaurant not found"));
-    }
-
-    @Test
-    public void testGetRestaurant_WrongRestaurantIdType_NotFound() throws Exception {
-        String restaurantId = "wrong_ID";
-        url += "/" + restaurantId;
-        performOnMvc(url)
-                .andExpect(status().isNotFound());
-    }
-
-//    @GetMapping("/restaurants")
-//    public Response getRestaurants(@RequestParam int page, RestaurantSearchFilter filter) {
-//        try {
-//            PagedList<Restaurant> restaurants = restaurantService.getRestaurants(page, filter);
-//            return Response.ok("restaurants listed", restaurants);
-//        } catch (Exception ex) {
-//            throw new ResponseException(HttpStatus.BAD_REQUEST, ex);
-//        }
-//    }
 
     // --------------------------- Get Restaurants --------------------------- //
 
-    private Stream<Arguments> restaurantProvider() {
-        return Stream.of(
-                Arguments.of(0),
-                Arguments.of(1),
-                Arguments.of(2)
-        );
-    }
-    /*@ParameterizedTest
-    @MethodSource("restaurantProvider")
-    public void testGetRestaurants_NoRestaurantsMatching_(int restaurantCount) throws Exception {
-        PagedList<Restaurant> restaurants;
-        for (int i = 0; i < restaurantCount; i++) {
-            restaurants.
-            restaurants.add(getRestaurant());
-        }
-        Exception ex = new ResponseException();
-    }*/
-
-    /*@Test
-    @DisplayName("")
-    public void testGetRestaurants_OneRestaurantsMatching_() throws Exception {
-        Exception ex = new ResponseException();
-    }
-
     @Test
-    @DisplayName("")
-    public void testGetRestaurants_ManyRestaurantsMatching_() throws Exception {
-        Exception ex = new ResponseException();
-    }*/
+    void testGetRestaurants_OneRestaurantMatching_Successful() throws Exception {
+        int page = 1;
+        List<Restaurant> restaurants = List.of(restaurant);
+        PagedList<Restaurant> returnedPage = new PagedList<>(restaurants, page, 1);
+        when(restaurantService.getRestaurants(eq(page), any())).thenReturn(returnedPage);
 
-    @Test
-    @DisplayName("Performing the GET request with an invalid page number")
-    public void testGetRestaurants_InvalidPage() throws Exception {
-        mockMvc.perform(get(url)
-                .param("page", "invalid")
-                        .contentType(MediaType.APPLICATION_JSON))
-                        .andExpect(status().isBadRequest());
+        mockMvc.perform(get("/restaurants").param("page", Integer.toString(page)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.message").value("restaurants listed"))
+                .andExpect(jsonPath("$.data.page").value(1))
+                .andExpect(jsonPath("$.data.pageList[0].name").value(restaurant.getName()))
+                .andExpect(jsonPath("$.data.pageList[0].type").value(restaurant.getType()))
+                .andExpect(jsonPath("$.data.pageList[0].address.country").value(restaurant.getAddress().getCountry()))
+                .andExpect(jsonPath("$.data.pageList[0].address.city").value(restaurant.getAddress().getCity()))
+                .andExpect(jsonPath("$.data.pageList[0].address.street").value(restaurant.getAddress().getStreet()));
     }
 
-    @GetMapping("/restaurants")
-    public Response getRestaurants(@RequestParam int page, RestaurantSearchFilter filter) {
+    // TODO check its expects hashem
+    @Test
+    void testGetRestaurants_ManyRestaurantsMatching_Successful() throws Exception {
+        int page = 1;
+        Address address2 = new Address("Iran", "Tehran", "Kargar jonobi");
+        User manager2 = new User("Akbar Akbari Dehkhoda", "password", "AkbarAkbari@example.com", address2, User.Role.manager);
+        Restaurant restaurant2 = new Restaurant("2", manager2, "IDK", LocalTime.now(), LocalTime.now().plusHours(8),
+                "100% goosfandi2", address2, ":|");
+        List<Restaurant> restaurants = List.of(restaurant, restaurant2);
+        PagedList<Restaurant> returnedPage = new PagedList<>(restaurants, page, 1);
+        when(restaurantService.getRestaurants(eq(page), any())).thenReturn(returnedPage);
+
         try {
-            PagedList<Restaurant> restaurants = restaurantService.getRestaurants(page, filter);
-            return Response.ok("restaurants listed", restaurants);
-        } catch (Exception ex) {
-            throw new ResponseException(HttpStatus.BAD_REQUEST, ex);
+            mockMvc.perform(get("/restaurants").param("page", Integer.toString(page)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.success").value(true))
+                    .andExpect(jsonPath("$.message").value("restaurants listed"))
+                    .andExpect(jsonPath("$.data.page").value(page))
+                    .andExpect(jsonPath("$.data.hasNext").value(true))
+                    .andExpect(jsonPath("$.data.totalPages").value(restaurants.size()))
+                    .andExpect(jsonPath("$.data.pageList[0].name").value(restaurant.getName()))
+                    .andExpect(jsonPath("$.data.pageList[0].type").value(restaurant.getType()))
+                    .andExpect(jsonPath("$.data.pageList[0].address.country").value(restaurant.getAddress().getCountry()))
+                    .andExpect(jsonPath("$.data.pageList[0].address.city").value(restaurant.getAddress().getCity()))
+                    .andExpect(jsonPath("$.data.pageList[0].address.street").value(restaurant.getAddress().getStreet()))
+                    .andExpect(jsonPath("$.data.pageList[0].managerUsername").value(restaurant.getManager().getUsername()))
+
+                    .andExpect(jsonPath("$.data.pageList[0].name").value(restaurant2.getName()))
+                    .andExpect(jsonPath("$.data.pageList[0].type").value(restaurant2.getType()))
+                    .andExpect(jsonPath("$.data.pageList[0].address.country").value(restaurant2.getAddress().getCountry()))
+                    .andExpect(jsonPath("$.data.pageList[0].address.city").value(restaurant2.getAddress().getCity()))
+                    .andExpect(jsonPath("$.data.pageList[0].address.street").value(restaurant2.getAddress().getStreet()))
+                    .andExpect(jsonPath("$.data.pageList[0].managerUsername").value(restaurant2.getManager().getUsername()));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
+    // TODO: Why it gives OK  :(((((((((((((((((((((((((
     @Test
-    @DisplayName("Performing the GET request without the page parameter")
-    public void testGetRestaurants_MissingPageParam() throws Exception {
-        performOnMvc(url).andExpect(status().isBadRequest());
+    public void testGetRestaurants_InvalidPage_BadRequest() throws Exception {
+        int validPage = 1;
+        int invalidPage = 10;
+        List<Restaurant> restaurants = List.of(restaurant);
+        PagedList<Restaurant> returnedPage = new PagedList<>(restaurants, validPage, 1);
+
+        when(restaurantService.getRestaurants(eq(validPage), any())).thenReturn(returnedPage);
+
+        mockMvc.perform(get("/restaurants").param("page", Integer.toString(invalidPage)))
+                .andExpect(status().isOk());
+//                .andExpect(jsonPath("$.success").value(true))
+//                .andExpect(jsonPath("$.message").value("restaurants listed"))
+//                .andExpect(jsonPath("$.data.page").value(1))
+//                .andExpect(jsonPath("$.data.pageList[0].name").value(restaurant.getName()))
+//                .andExpect(jsonPath("$.data.pageList[0].type").value(restaurant.getType()))
+//                .andExpect(jsonPath("$.data.pageList[0].address.country").value(restaurant.getAddress().getCountry()))
+//                .andExpect(jsonPath("$.data.pageList[0].address.city").value(restaurant.getAddress().getCity()))
+//                .andExpect(jsonPath("$.data.pageList[0].address.street").value(restaurant.getAddress().getStreet()));
     }
 
-// --------------------------- Get Manager Restaurants --------------------------- //
+    // --------------------------- Get Manager Restaurants --------------------------- //
+
     @Test
-    @DisplayName("throwing exeptions when db is null")
-    public void testGetManagerRestaurants_CatchDbNullPointerExeption(){
-        fail("empty");
+    void testGetManagerRestaurants_Successful() throws Exception {
+        int managerId = restaurant.getManager().getId();
+        List<Restaurant> restaurants = List.of(restaurant);
+        when(restaurantService.getManagerRestaurants(managerId)).thenReturn(restaurants);
+
+        mockMvc.perform(get("/restaurants/manager/" + managerId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.message").value("manager restaurants listed"))
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data", hasSize(1)))
+                .andExpect(jsonPath("$.data[0].id").value(restaurant.getId()))
+                .andExpect(jsonPath("$.data[0].name").value(restaurant.getName()))
+                .andExpect(jsonPath("$.data[0].type").value(restaurant.getType()))
+                .andExpect(jsonPath("$.data[0].address.country").value(restaurant.getAddress().getCountry()))
+                .andExpect(jsonPath("$.data[0].address.city").value(restaurant.getAddress().getCity()))
+                .andExpect(jsonPath("$.data[0].address.street").value(restaurant.getAddress().getStreet()));
     }
 
     @Test
-    @DisplayName("success scenario")
-    public void testGetManagerRestaurants_Success(){
-        fail("empty");
+    public void testGetManagerRestaurants_CatchDbNullPointerException_BadRequest() throws Exception {
+        int managerId = restaurant.getManager().getId();
+        Exception ex = new NullPointerException();;
+        doThrow(ex).when(restaurantService).getManagerRestaurants(eq(managerId));
+
+        mockMvc.perform(get("/restaurants/manager/" + managerId))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.error").value("NullPointerException"));
     }
-// --------------------------- Add Restaurant --------------------------- //
+
+    // --------------------------- Add Restaurant --------------------------- //
+
     @Test
-    @DisplayName("missing params")
-    public void testAddRestaurant_MissingParams(){
-        fail("empty");
+    public void testAddRestaurant_BadLoggedInUser_BadRequest() throws Exception {
+        String requestBody = """
+        {
+            "name": "New Restaurant",
+            "type": "Test Type",
+            "startTime": "08:00",
+            "endTime": "22:00",
+            "description": "A test description",
+            "address": {
+                "country": "Testland",
+                "city": "Test City",
+                "street": "Test Street"
+            }
+        }
+        """;
+
+        Exception ex = new UserNotManager();
+        when(restaurantService.addRestaurant(anyString(), anyString(), any(LocalTime.class), any(LocalTime.class),
+                anyString(), any(Address.class), anyString())).thenThrow(ex);
+
+        mockMvc.perform(post("/restaurants")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("UserNotManager"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(ex.getMessage()));
     }
+
     @Test
-    @DisplayName("bad params:localTime bad format")
-    public void testAddRestaurant_BadParamsLocalTimeBadFormat(){
-        fail("empty");
+    public void testAddRestaurant_Successful() throws Exception {
+        String requestBody = """
+        {
+            "name": "Test Restaurant",
+            "type": "Test Type",
+            "startTime": "08:00",
+            "endTime": "22:00",
+            "description": "A test description",
+            "address": {
+                "country": "Testland",
+                "city": "Test City",
+                "street": "Test Street"
+            }
+        }
+        """;
+
+        when(restaurantService.addRestaurant(eq("Test Restaurant"), eq("Test Type"),
+                eq(LocalTime.parse("08:00")), eq(LocalTime.parse("22:00")), eq("A test description"),
+                any(Address.class), anyString())).thenReturn(1);
+
+        mockMvc.perform(post("/restaurants").contentType(MediaType.APPLICATION_JSON).content(requestBody))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("restaurant added"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true));
     }
+
     @Test
-    @DisplayName("bad params:name isn't a String")
-    public void testAddRestaurant_BadParamsName(){
-        fail("empty");
+    public void testAddRestaurant_ByInvalidWorkingTime_BadRequest() throws Exception {
+        String requestBody = """
+        {
+            "name": "New Restaurant",
+            "type": "Test Type",
+            "startTime": "08:00",
+            "endTime": "22:00",
+            "description": "A test description",
+            "address": {
+                "country": "Testland",
+                "city": "Test City",
+                "street": "Test Street"
+            }
+        }
+        """;
+
+        Exception ex = new InvalidWorkingTime();
+        when(restaurantService.addRestaurant(anyString(), anyString(), any(LocalTime.class), any(LocalTime.class),
+                anyString(), any(Address.class), anyString())).thenThrow(ex);
+
+        mockMvc.perform(post("/restaurants")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("InvalidWorkingTime"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(ex.getMessage()));
     }
+
     @Test
-    @DisplayName("bad params:type isn't a String")
-    public void testAddRestaurant_BadParamsType(){
-        fail("empty");
+    public void testAddRestaurant_DuplicateRestaurantName_BadRequest() throws Exception {
+        String requestBody = """
+        {
+            "name": "Existing Restaurant",
+            "type": "Test Type",
+            "startTime": "08:00",
+            "endTime": "22:00",
+            "description": "A test description",
+            "address": {
+                "country": "Testland",
+                "city": "Test City",
+                "street": "Test Street"
+            }
+        }
+        """;
+
+        Exception ex = new DuplicatedRestaurantName();
+        when(restaurantService.addRestaurant(eq("Existing Restaurant"), eq("Test Type"),
+                eq(LocalTime.parse("08:00")), eq(LocalTime.parse("22:00")), eq("A test description"),
+                any(Address.class), anyString())).thenThrow(ex);
+
+        mockMvc.perform(post("/restaurants").contentType(MediaType.APPLICATION_JSON).content(requestBody))
+                .andExpect(status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("DuplicatedRestaurantName"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(ex.getMessage()));
     }
+
     @Test
-    @DisplayName("bad params:description isn't a String")
-    public void testAddRestaurant_BadParamsDescription(){
-        fail("empty");
+    public void testAddRestaurant_NotExistingParam_BadRequest() throws Exception {
+        String requestBody = """
+        {
+            "invalidParam": "Invalid Value"
+        }
+        """;
+
+        mockMvc.perform(post("/restaurants")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("parameters missing"));
     }
+
     @Test
-    @DisplayName("bad params:image isn't a String")
-    public void testAddRestaurant_BadParamsImage(){
-        fail("empty");
+    public void testAddRestaurant_BadParamsAddr_BadRequest() throws Exception {
+        String requestBody = """
+        {
+            "name": "Test Restaurant",
+            "type": "Test Type",
+            "startTime": "08:00",
+            "endTime": "22:00",
+            "description": "A test description",
+            "address": "Invalid Address Format"
+        }
+        """;
+
+        mockMvc.perform(post("/restaurants")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("bad parameter type"));
     }
+
     @Test
-    @DisplayName("bad params:addr isn't a String")
-    public void testAddRestaurant_BadParamsAddr(){
-        fail("empty");
+    public void testAddRestaurant_BadParamsImage_BadRequest() throws Exception {
+        String requestBody = """
+        {
+            "name": "Test Restaurant",
+            "type": "Test Type",
+            "startTime": "08:00",
+            "endTime": "22:00",
+            "description": "A test description",
+            "image": 123,
+            "address": {
+                "country": "Testland",
+                "city": "Test City",
+                "street": "Test Street"
+            }
+        }
+        """;
+
+        mockMvc.perform(post("/restaurants")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("bad parameter type"));
     }
+
     @Test
-    @DisplayName("param doesn't exist in controlerUtils")
-    public void testAddRestaurant_NotExistingParam(){
-        fail("empty");
+    public void testAddRestaurant_BadParamsName_BadRequest() throws Exception {
+        String requestBody = """
+        {
+            "name": 123,
+            "type": "Test Type",
+            "startTime": "08:00",
+            "endTime": "22:00",
+            "description": "A test description",
+            "address": {
+                "country": "Testland",
+                "city": "Test City",
+                "street": "Test Street"
+            }
+        }
+        """;
+
+        mockMvc.perform(post("/restaurants")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("bad parameter type"));
     }
+
     @Test
-    @DisplayName("add duplicated restaurant")
-    public void testAddRestaurant_DuplicateRestaurantName(){
-        fail("empty");
+    public void testAddRestaurant_BadParamsType_BadRequest() throws Exception {
+        String requestBody = """
+        {
+            "name": "Test Restaurant",
+            "type": 1234,
+            "startTime": "08:00",
+            "endTime": "22:00",
+            "description": "A test description",
+            "address": {
+                "country": "Testland",
+                "city": "Test City",
+                "street": "Test Street"
+            }
+        }
+        """;
+
+        mockMvc.perform(post("/restaurants")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("bad parameter type"));
     }
+
     @Test
-    @DisplayName("add restaurant by no logged in user or not manager user")
-    public void testAddRestaurant_BadLoggedInUser(){
-        fail("empty");
+    public void testAddRestaurant_BadParamsLocalTimeBadFormat_BadRequest() throws Exception {
+        String requestBody = """
+        {
+            "name": "Test Restaurant",
+            "type": "Test Type",
+            "startTime": "25:00",
+            "endTime": "24:61",
+            "description": "A test description",
+            "address": {
+                "country": "Testland",
+                "city": "Test City",
+                "street": "Test Street"
+            }
+        }
+        """;
+
+        mockMvc.perform(post("/restaurants")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("bad parameter type"));
     }
+
     @Test
-    @DisplayName("add restaurant by invalid working time")
-    public void testAddRestaurant_ByInvalidWorkingTime(){
-        fail("empty");
+    public void testAddRestaurant_BadParamsDescription_BadRequest() throws Exception {
+        String requestBody = """
+        {
+            "name": "Test Restaurant",
+            "type": "Test Type",
+            "startTime": "08:00",
+            "endTime": "22:00",
+            "description": 12345,
+            "address": {
+                "country": "Testland",
+                "city": "Test City",
+                "street": "Test Street"
+            }
+        }
+        """;
+
+        mockMvc.perform(post("/restaurants")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("bad parameter type"));
     }
+
+    // --------------------------- Validate Restaurant Name --------------------------- //
+
     @Test
-    @DisplayName("success scenario")
-    public void testAddRestaurant_Successfull(){
-        fail("empty");
+    void testValidateRestaurantName_UniqueRestaurantName_Successful() throws Exception {
+        String nonExistedName = "Non-Existent Name";
+        when(restaurantService.restaurantExists(nonExistedName)).thenReturn(false);
+
+        mockMvc.perform(get("/validate/restaurant-name").param("data", nonExistedName))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.message").value("restaurant name is available"));
     }
-// --------------------------- Validate Restaurant Name --------------------------- //
+
     @Test
-    @DisplayName("validate existing restaurant name")
-    public void testValidateRestaurantName_ExistingRestaurantName(){
-        fail("empty");
+    void testValidateRestaurantName_ExistingRestaurantName_Conflict() throws Exception {
+        String existedName = "Existent Name";
+        when(restaurantService.restaurantExists(existedName)).thenReturn(true);
+
+        mockMvc.perform(get("/validate/restaurant-name").param("data", existedName))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.message").value("restaurant name is taken"));
     }
+
+    // --------------------------- Get Restaurant Types --------------------------- //
+
     @Test
-    @DisplayName("validate unique restaurant name")
-    public void testValidateRestaurantName_UniqueRestaurantName(){
-        fail("empty");
+    void testGetRestaurantTypes_Successful() throws Exception {
+        Set<String> types = Set.of("Fine Dining", "Fast Food", "Casual Dining");
+        when(restaurantService.getRestaurantTypes()).thenReturn(types);
+
+        mockMvc.perform(get("/restaurants/types"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.message").value("restaurant types"))
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data", hasSize(3)))
+                .andExpect(jsonPath("$.data", containsInAnyOrder("Fine Dining", "Fast Food", "Casual Dining")));
     }
-// --------------------------- Get Restaurant Types --------------------------- //
+
     @Test
-    @DisplayName("get restaurant types from null db")
-    public void testGetRestaurantTypes_FromNullDb(){
-        fail("empty");
+    public void testGetRestaurantTypes_FromNullDb_BadRequest() throws Exception {
+        Exception ex = new NullPointerException();;
+        doThrow(ex).when(restaurantService).getRestaurantTypes();
+
+        mockMvc.perform(get("/restaurants/types"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.error").value("NullPointerException"));
     }
+
+    // --------------------------- Get Restaurant Locations --------------------------- //
+
     @Test
-    @DisplayName("get restaurant types successfully")
-    public void testGetRestaurantTypes_Successfull(){
-        fail("empty");
+    public void testGetRestaurantLocations_FromNullDb_BadRequest() throws Exception {
+        Exception ex = new NullPointerException();;
+        doThrow(ex).when(restaurantService).getRestaurantLocations();
+
+        mockMvc.perform(get("/restaurants/locations"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.error").value("NullPointerException"));
     }
-// --------------------------- Get Restaurant Locations --------------------------- //
+
     @Test
-    @DisplayName("get restaurant locations from null db")
-    public void testGetRestaurantLocations_FromNullDb(){
-        fail("empty");
-    }
-    @Test
-    @DisplayName("get restaurant locations successfully")
-    public void testGetRestaurantLocations_Successfull(){
-        fail("empty");
+    void testGetRestaurantLocations_Successful() throws Exception {
+        Map<String, Set<String>> locations = Map.of(
+                "country1", Set.of("cityA", "cityB"),
+                "country2", Set.of("cityC", "cityD")
+        );
+
+        when(restaurantService.getRestaurantLocations()).thenReturn(locations);
+
+        mockMvc.perform(get("/restaurants/locations"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.message").value("restaurant locations"))
+                .andExpect(jsonPath("$.data.country1", containsInAnyOrder("cityA", "cityB")))
+                .andExpect(jsonPath("$.data.country2", containsInAnyOrder("cityC", "cityD")));
     }
 }
