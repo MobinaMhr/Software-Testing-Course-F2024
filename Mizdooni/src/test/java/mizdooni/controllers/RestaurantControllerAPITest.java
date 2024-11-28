@@ -261,6 +261,11 @@ public class RestaurantControllerAPITest {
     public void testAddRestaurant_BadLoggedInUser(){
         fail("empty");
     }
+    @Test
+    @DisplayName("add restaurant by invalid working time")
+    public void testAddRestaurant_ByInvalidWorkingTime(){
+        fail("empty");
+    }
 // --------------------------- Validate Restaurant Name --------------------------- //
 // --------------------------- Get Restaurant Types --------------------------- //
 // --------------------------- Get Restaurant Locations --------------------------- //
