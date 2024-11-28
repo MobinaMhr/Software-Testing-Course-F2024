@@ -226,6 +226,12 @@ public class RestaurantControllerAPITest {
     public void testAddRestaurant_BadParamsName(){
         fail("empty");
     }
+    @Test
+    @DisplayName("bad params:type isn't a String")
+    public void testAddRestaurant_BadParamsType(){
+        fail("empty");
+    }
+
 // --------------------------- Validate Restaurant Name --------------------------- //
 // --------------------------- Get Restaurant Types --------------------------- //
 // --------------------------- Get Restaurant Locations --------------------------- //
