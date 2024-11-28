@@ -266,7 +266,17 @@ public class RestaurantControllerAPITest {
     public void testAddRestaurant_ByInvalidWorkingTime(){
         fail("empty");
     }
+    @Test
+    @DisplayName("success scenario")
+    public void testAddRestaurant_Successfull(){
+        fail("empty");
+    }
 // --------------------------- Validate Restaurant Name --------------------------- //
+    @Test
+    @DisplayName("validate existing restaurant name")
+    public void testValidateRestaurantName_ExistingRestaurantName(){
+        fail("empty");
+    }
 // --------------------------- Get Restaurant Types --------------------------- //
 // --------------------------- Get Restaurant Locations --------------------------- //
 
