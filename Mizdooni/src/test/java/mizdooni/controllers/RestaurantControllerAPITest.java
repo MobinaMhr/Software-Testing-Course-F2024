@@ -19,6 +19,7 @@ import mizdooni.model.Address;
 import mizdooni.model.Restaurant;
 import mizdooni.model.User;
 import mizdooni.response.PagedList;
+import mizdooni.response.ResponseException;
 import mizdooni.service.RestaurantService;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -27,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -134,26 +136,16 @@ class RestaurantControllerAPITest {
                 .andExpect(jsonPath("$.data.pageList[1].address.street").value(restaurant2.getAddress().getStreet()));
     }
 
-    // TODO: Why it gives OK  :(((((((((((((((((((((((((
     @Test
     public void testGetRestaurants_InvalidPage_BadRequest() throws Exception {
-        int validPage = 1;
         int invalidPage = 10;
-        List<Restaurant> restaurants = List.of(restaurant);
-        PagedList<Restaurant> returnedPage = new PagedList<>(restaurants, validPage, 1);
-
-        when(restaurantService.getRestaurants(eq(validPage), any())).thenReturn(returnedPage);
+        Exception ex = new NullPointerException();
+        when(restaurantService.getRestaurants(eq(invalidPage), any())).thenThrow(ex);
 
         mockMvc.perform(get("/restaurants").param("page", Integer.toString(invalidPage)))
-                .andExpect(status().isOk());
-//                .andExpect(jsonPath("$.success").value(true))
-//                .andExpect(jsonPath("$.message").value("restaurants listed"))
-//                .andExpect(jsonPath("$.data.page").value(1))
-//                .andExpect(jsonPath("$.data.pageList[0].name").value(restaurant.getName()))
-//                .andExpect(jsonPath("$.data.pageList[0].type").value(restaurant.getType()))
-//                .andExpect(jsonPath("$.data.pageList[0].address.country").value(restaurant.getAddress().getCountry()))
-//                .andExpect(jsonPath("$.data.pageList[0].address.city").value(restaurant.getAddress().getCity()))
-//                .andExpect(jsonPath("$.data.pageList[0].address.street").value(restaurant.getAddress().getStreet()));
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.error").value("NullPointerException"));
     }
 
     // --------------------------- Get Manager Restaurants --------------------------- //
@@ -181,7 +173,7 @@ class RestaurantControllerAPITest {
     @Test
     public void testGetManagerRestaurants_CatchDbNullPointerException_BadRequest() throws Exception {
         int managerId = restaurant.getManager().getId();
-        Exception ex = new NullPointerException();;
+        Exception ex = new NullPointerException();
         doThrow(ex).when(restaurantService).getManagerRestaurants(eq(managerId));
 
         mockMvc.perform(get("/restaurants/manager/" + managerId))
@@ -505,7 +497,7 @@ class RestaurantControllerAPITest {
 
     @Test
     public void testGetRestaurantTypes_FromNullDb_BadRequest() throws Exception {
-        Exception ex = new NullPointerException();;
+        Exception ex = new NullPointerException();
         doThrow(ex).when(restaurantService).getRestaurantTypes();
 
         mockMvc.perform(get("/restaurants/types"))
@@ -518,7 +510,7 @@ class RestaurantControllerAPITest {
 
     @Test
     public void testGetRestaurantLocations_FromNullDb_BadRequest() throws Exception {
-        Exception ex = new NullPointerException();;
+        Exception ex = new NullPointerException();
         doThrow(ex).when(restaurantService).getRestaurantLocations();
 
         mockMvc.perform(get("/restaurants/locations"))
