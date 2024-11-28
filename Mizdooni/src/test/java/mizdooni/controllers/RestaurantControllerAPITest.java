@@ -36,6 +36,7 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
@@ -149,7 +150,7 @@ public class RestaurantControllerAPITest {
                 Arguments.of(2)
         );
     }
-    @ParameterizedTest
+    /*@ParameterizedTest
     @MethodSource("restaurantProvider")
     public void testGetRestaurants_NoRestaurantsMatching_(int restaurantCount) throws Exception {
         PagedList<Restaurant> restaurants;
@@ -158,9 +159,9 @@ public class RestaurantControllerAPITest {
             restaurants.add(getRestaurant());
         }
         Exception ex = new ResponseException();
-    }
+    }*/
 
-    @Test
+    /*@Test
     @DisplayName("")
     public void testGetRestaurants_OneRestaurantsMatching_() throws Exception {
         Exception ex = new ResponseException();
@@ -170,7 +171,7 @@ public class RestaurantControllerAPITest {
     @DisplayName("")
     public void testGetRestaurants_ManyRestaurantsMatching_() throws Exception {
         Exception ex = new ResponseException();
-    }
+    }*/
 
     @Test
     @DisplayName("Performing the GET request with an invalid page number")
@@ -198,6 +199,11 @@ public class RestaurantControllerAPITest {
     }
 
 // --------------------------- Get Manager Restaurants --------------------------- //
+    @Test
+    @DisplayName("throwing exeptions when db is null")
+    public void testGetManagerRestaurants_CatchDbNullPointerExeption(){
+        fail("empty");
+    }
 // --------------------------- Add Restaurant --------------------------- //
 // --------------------------- Validate Restaurant Name --------------------------- //
 // --------------------------- Get Restaurant Types --------------------------- //
