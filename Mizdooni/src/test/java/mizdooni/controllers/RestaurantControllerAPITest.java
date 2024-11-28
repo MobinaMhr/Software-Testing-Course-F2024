@@ -283,6 +283,11 @@ public class RestaurantControllerAPITest {
         fail("empty");
     }
 // --------------------------- Get Restaurant Types --------------------------- //
+    @Test
+    @DisplayName("get restaurant types from null db")
+    public void testGetRestaurantTypes_FromNullDb(){
+        fail("empty");
+    }
 // --------------------------- Get Restaurant Locations --------------------------- //
 
 }
