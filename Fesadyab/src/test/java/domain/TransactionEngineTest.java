@@ -122,7 +122,7 @@ public class TransactionEngineTest {
     }
 
     @Test // Txn2 amount > threshold(200)
-    void testGetTransactionPatternAboveThresholdWithSingleTxnAboveThreshold_____() {
+    void testDecisionBoundaryInGetTransactionPatternAboveThresholdWithSingleTxnAboveThreshold() {
         TransactionEngine engine = new TransactionEngine();
 
         engine.transactionHistory.add(txn1);
@@ -148,7 +148,7 @@ public class TransactionEngineTest {
         assertEquals(100, txnPattern);
     }
     @Test
-    void testGetTransactionPatternAboveThresholdWithMultipleTransactionsAboveThresholdWithNotSameDiffToPrevious_____() {
+    void testDecisionBoundaryInGetTransactionPatternAboveThresholdWithMultipleTransactionsAboveThresholdWithNotSameDiffToPrevious_____() {
         TransactionEngine engine = new TransactionEngine();
 
         engine.transactionHistory.add(txn1);
