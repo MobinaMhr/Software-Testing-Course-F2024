@@ -49,7 +49,6 @@ public class TransactionEngine {
                 diff = txn.amount - previous.amount;
                 previous = txn;
             } else if (diff != txn.amount - previous.amount) {
-                System.out.println("hi there");
                 return 0;
             }
         }
