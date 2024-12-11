@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import java.util.*;
 
+// Just a small test on Github Pipeline =)))
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TransactionTest {
