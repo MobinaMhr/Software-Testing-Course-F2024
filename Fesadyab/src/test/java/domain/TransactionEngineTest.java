@@ -207,7 +207,7 @@ public class TransactionEngineTest {
         int fraudScore = engine.detectFraudulentTransaction(debitTxn2);
         assertEquals(500, fraudScore);
     }
-    
+
     // ---------------------------------------- Add Transaction And Detect Fraud ---------------------------------------- //
 
     @Test
