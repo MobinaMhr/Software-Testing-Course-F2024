@@ -10,6 +10,7 @@ public class TransactionEngineTest {
     Transaction txn2;
     Transaction txn3;
     Transaction txn4;
+    Transaction txn5;
     Transaction debitTxn1;
     Transaction debitTxn2;
 
@@ -19,6 +20,7 @@ public class TransactionEngineTest {
         txn2 = new Transaction(){{transactionId = 2; accountId = 10; amount = 250; isDebit = false;}};
         txn3 = new Transaction(){{transactionId = 3; accountId = 10; amount = 350; isDebit = false;}};
         txn4 = new Transaction(){{transactionId = 4; accountId = 10; amount = 1100; isDebit = false;}};
+        txn5 = new Transaction(){{transactionId = 4; accountId = 10; amount = 750; isDebit = false;}};
 
         debitTxn1 = new Transaction(){{transactionId = 5; accountId = 10; amount = 250; isDebit = true;}};
         debitTxn2 = new Transaction(){{transactionId = 6; accountId = 10; amount = 900; isDebit = true;}};
@@ -119,6 +121,18 @@ public class TransactionEngineTest {
         assertEquals(100, txnPattern);
     }
 
+    @Test // Txn2 amount > threshold(200)
+    void testGetTransactionPatternAboveThresholdWithSingleTxnAboveThreshold_____() {
+        TransactionEngine engine = new TransactionEngine();
+
+        engine.transactionHistory.add(txn1);
+        engine.transactionHistory.add(txn2);
+
+        int threshold = 250;
+        int txnPattern = engine.getTransactionPatternAboveThreshold(threshold);
+        assertEquals(0, txnPattern);
+    }
+
     // Txn2 and Txn3 amount > threshold(200)
     // Doesn't go to else if
     @Test
@@ -132,6 +146,18 @@ public class TransactionEngineTest {
         int threshold = 200;
         int txnPattern = engine.getTransactionPatternAboveThreshold(threshold);
         assertEquals(100, txnPattern);
+    }
+    @Test
+    void testGetTransactionPatternAboveThresholdWithMultipleTransactionsAboveThresholdWithNotSameDiffToPrevious_____() {
+        TransactionEngine engine = new TransactionEngine();
+
+        engine.transactionHistory.add(txn1);
+        engine.transactionHistory.add(txn2);
+        engine.transactionHistory.add(txn4);
+
+        int threshold = 200;
+        int txnPattern = engine.getTransactionPatternAboveThreshold(threshold);
+        assertEquals(0, txnPattern);
     }
     // Txn2 and Txn4 amount > threshold(200)
     // goes to else if
@@ -181,7 +207,7 @@ public class TransactionEngineTest {
         int fraudScore = engine.detectFraudulentTransaction(debitTxn2);
         assertEquals(500, fraudScore);
     }
-
+    
     // ---------------------------------------- Add Transaction And Detect Fraud ---------------------------------------- //
 
     @Test
