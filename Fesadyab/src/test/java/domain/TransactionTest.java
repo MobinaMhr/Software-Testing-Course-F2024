@@ -23,17 +23,17 @@ public class TransactionTest {
     }
 
     @Test
-    void testTxnEqualsWithDummyObject() {
+    void testTxnEquals_WithDummyObject_ReturnsFalse() {
         assertFalse(txn1.equals(dummy));
     }
 
     @Test
-    void testTxnEqualsWithSameTxnObject() {
+    void testTxnEquals_WithSameTxn_ReturnsTrue() {
         assertTrue(txn1.equals(txn1));
     }
 
     @Test
-    void testTxnEqualsWithDifferentTxnObject() {
+    void testTxnEquals_WithDifferentTxn_ReturnsFalse() {
         assertFalse(txn1.equals(txn2));
     }
 }
