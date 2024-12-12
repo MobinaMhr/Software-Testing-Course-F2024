@@ -12,11 +12,11 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TransactionEngineTest {
     private static final String MESSAGE_EMPTY_HISTORY =
             "Average amount should be 0 for empty transaction history";
-    private static final String MESSAGE_SINGLE_TXN =
+    private static final String MESSAGE_SINGLE_TRANSACTION =
             "Average amount should be 150 for transaction history with single transaction";
-    private static final String MESSAGE_SINGLE_TXN_WRONG_ID =
+    private static final String MESSAGE_SINGLE_TRANSACTION_WRONG_ID =
             "Average amount should be 0 for transaction history with single transaction while giving wrong account id";
-    private static final String MESSAGE_MULTIPLE_TXNS =
+    private static final String MESSAGE_MULTIPLE_TRANSACTIONS =
             "Average amount should be 200 for transaction history with single transaction";
 
     Transaction txn1, txn2, txn3, txn4, txn5;
@@ -24,7 +24,7 @@ public class TransactionEngineTest {
 
     private TransactionEngine setupTxnEngine(List<Transaction> transactions) {
         TransactionEngine engine = new TransactionEngine();
-        for (Transaction txn : transactions) engine.transactionHistory.add(txn);
+        engine.transactionHistory.addAll(transactions);
         return engine;
     }
 
@@ -44,112 +44,100 @@ public class TransactionEngineTest {
         debitTxn2 = createTransaction(6, 10, 900, true);
     }
 
-    // ---------------------------------------- Average Transaction Amount ---------------------------------------- //
+    // ---------- Average Transaction Amount ---------- //
 
     @Test
-    void testAverageTransactionAmountWithEmptyHistory() {
+    void testAverageTransactionAmount_WithEmptyHistory() {
         TransactionEngine engine = setupTxnEngine(List.of());
         assertEquals(0, engine.getAverageTransactionAmountByAccount(1),
                 MESSAGE_EMPTY_HISTORY);
     }
 
     @Test
-    void testAverageTransactionAmountWithSingleTxn() {
+    void testAverageTransactionAmount_WithSingleTxn() {
         TransactionEngine engine = setupTxnEngine(singletonList(txn1));
         assertEquals(150, engine.getAverageTransactionAmountByAccount(10),
-                MESSAGE_SINGLE_TXN);
+                MESSAGE_SINGLE_TRANSACTION);
     }
 
     @Test
-    void testAverageTransactionAmountWithSingleTxnDifferentId() {
+    void testAverageTransactionAmount_WithSingleTxnDifferentId() {
         TransactionEngine engine = setupTxnEngine(singletonList(txn1));
         assertEquals(0, engine.getAverageTransactionAmountByAccount(15),
-                MESSAGE_SINGLE_TXN_WRONG_ID);
+                MESSAGE_SINGLE_TRANSACTION_WRONG_ID);
     }
 
     @Test
-    void testAverageTransactionAmountWithMultipleTransactions() {
+    void testAverageTransactionAmount_WithMultipleTxns() {
         TransactionEngine engine = setupTxnEngine(asList(txn1, txn2));
         assertEquals(200, engine.getAverageTransactionAmountByAccount(10),
-                MESSAGE_MULTIPLE_TXNS);
+                MESSAGE_MULTIPLE_TRANSACTIONS);
     }
 
-    // ---------------------------------------- Transaction Pattern Above Threshold ---------------------------------------- //
+    // ---------- Transaction Pattern Above Threshold ---------- //
 
     @Test
-    void testTransactionPatternAboveThresholdWithEmptyHistory() {
+    void testTransactionPatternAboveThreshold_WithEmptyHistory() {
         TransactionEngine engine = setupTxnEngine(List.of());
         assertEquals(0, engine.getTransactionPatternAboveThreshold(1200));
     }
 
     @Test
-    void testTransactionPatternAboveThresholdWithSingleTxnDifferentId() {
+    void testTransactionPatternAboveThreshold_WithSingleTxnDifferentId() {
         TransactionEngine engine = setupTxnEngine(singletonList(txn1));
         assertEquals(0, engine.getTransactionPatternAboveThreshold(1200));
     }
 
-    // ---------------------------------------- Get Transaction Pattern Above Threshold ---------------------------------------- //
+    // ---------- Get Transaction Pattern Above Threshold ---------- //
 
     @Test
-    void testGetTransactionPatternAboveThresholdWithBellowThresholdTxn() {
+    void testGetTransactionPatternAboveThreshold_TxnBellowThreshold() {
         TransactionEngine engine = setupTxnEngine(asList(txn1, txn2));
         assertEquals(0, engine.getTransactionPatternAboveThreshold(1200));
     }
 
-    @Test // Txn2 amount > threshold(200)
-    void testGetTransactionPatternAboveThresholdWithSingleTxnAboveThreshold() {
-        TransactionEngine engine = setupTxnEngine(asList(txn1, txn2));
-        assertEquals(100, engine.getTransactionPatternAboveThreshold(200));
-    }
-
-    @Test // Txn2 amount > threshold(200)
-    void testDecisionBoundaryInGetTransactionPatternAboveThresholdWithSingleTxnAboveThreshold() {
+    @Test
+    void testGetTransactionPatternAboveThreshold_SingleTxnAboveThreshold() {
+        // Txn2 amount > threshold(200)
         TransactionEngine engine = setupTxnEngine(asList(txn1, txn2));
         assertEquals(0, engine.getTransactionPatternAboveThreshold(250));
     }
 
-    // Txn2 and Txn3 amount > threshold(200)
-    // Doesn't go to else if
     @Test
-    void testGetTransactionPatternAboveThresholdWithMultipleTransactionsAboveThresholdWithNotSameDiffToPrevious() {
+    void testGetTransactionPatternAboveThreshold_MultipleTxnsAboveThreshold_NotSameDiffAmountToPrevious() {
+        // Txn2 and Txn3 amount > threshold(200) | Doesn't go to else if
         TransactionEngine engine = setupTxnEngine(asList(txn1, txn2, txn3));
         assertEquals(100, engine.getTransactionPatternAboveThreshold(200));
     }
+
     @Test
-    void testDecisionBoundaryInGetTransactionPatternAboveThresholdWithMultipleTransactionsAboveThresholdWithNotSameDiffToPrevious_____() {
-        TransactionEngine engine = setupTxnEngine(asList(txn1, txn2, txn4));
-        assertEquals(0, engine.getTransactionPatternAboveThreshold(200));
-    }
-    // TODO::
-    // Txn2 and Txn4 amount > threshold(200)
-    // goes to else if
-    @Test
-    void testGetTransactionPatternAboveThresholdWithMultipleTransactionsAboveThresholdWithSameDiffToPrevious() {
+    void testGetTransactionPatternAboveThreshold_MultipleTxnsAboveThreshold_SameDiffAmountToPrevious() {
+        // Txn2 and Txn4 amount > threshold(200) | goes to else if
         TransactionEngine engine = setupTxnEngine(asList(txn1, txn2, txn4));
         assertEquals(0, engine.getTransactionPatternAboveThreshold(200));
     }
 
-    // ---------------------------------------- Detect Fraudulent Transaction ---------------------------------------- //
+    // ---------- Detect Fraudulent Transaction ---------- //
 
     @Test
-    void testDetectFraudulentTransactionOnNonDebitTxn() {
+    void testDetectFraudulentTransaction_OnNonDebitTxn() {
         TransactionEngine engine = setupTxnEngine(singletonList(txn1));
         assertEquals(0, engine.detectFraudulentTransaction(txn1));
     }
 
     @Test
-    void testDetectFraudulentTransactionOnFraudulentTxn() {
+    void testDetectFraudulentTransaction_OnFraudulentTxn() {
         TransactionEngine engine = setupTxnEngine(asList(txn1, debitTxn1));
         assertEquals(0, engine.detectFraudulentTransaction(debitTxn1));
     }
 
     @Test
-    void testDetectFraudulentTransactionOnUnFraudulentTxn() {
+    void testDetectFraudulentTransaction_OnUnFraudulentTxn() {
         TransactionEngine engine = setupTxnEngine(asList(txn1, txn2));
         assertEquals(500, engine.detectFraudulentTransaction(debitTxn2));
     }
 
-    // ---------------------------------------- Add Transaction And Detect Fraud ---------------------------------------- //
+    // ---------- Add Transaction And Detect Fraud ---------- //
 
     @Test
     void testAddTransactionAndDetectFraud_OnNonDebitTxn() {
@@ -164,14 +152,23 @@ public class TransactionEngineTest {
     }
 
     @Test // txn2 is bellow threshold
-    void testAddTransactionAndDetectFraud_OnUnFraudulentTxnOtherTxnBellowThreshold() {
+    void testAddTransactionAndDetectFraud_OnUnFraudulentTxnOtherTxnsBellowThreshold() {
         TransactionEngine engine = setupTxnEngine(asList(txn1, txn2));
         assertEquals(0, engine.addTransactionAndDetectFraud(debitTxn1));
     }
 
     @Test // txn4 is above threshold
-    void testAddTransactionAndDetectFraud_OnUnFraudulentTxnOtherTxnAboveThreshold() {
+    void testAddTransactionAndDetectFraud_OnUnFraudulentTxnOtherTxnsAboveThreshold() {
         TransactionEngine engine = setupTxnEngine(asList(txn1, txn4));
         assertEquals(950, engine.addTransactionAndDetectFraud(debitTxn1));
     }
 }
+
+
+
+
+//    @Test // Txn2 amount > threshold(200)
+//    void testGetTransactionPatternAboveThreshold_SingleTxnAboveThreshold() {
+//        TransactionEngine engine = setupTxnEngine(asList(txn1, txn2));
+//        assertEquals(100, engine.getTransactionPatternAboveThreshold(200));
+//    }
