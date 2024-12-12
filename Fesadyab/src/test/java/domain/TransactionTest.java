@@ -8,27 +8,32 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TransactionTest {
-    Transaction transaction;
+    Transaction txn1, txn2;
+    Object dummy;
+
+    private Transaction createTransaction(int _txnId, int _acctId, int _amt, boolean _isDebit) {
+        return new Transaction() {{transactionId = _txnId; accountId = _acctId; amount = _amt; isDebit = _isDebit;}};
+    }
+
     @BeforeEach
     void setUp() {
-        transaction = new Transaction(){{transactionId=1; accountId=10; amount=1500; isDebit=false;}};
+        txn1 = createTransaction(1, 10, 1500, false);
+        txn2 = createTransaction(2, 10, 1500, false);
+        dummy = new Object();
     }
 
     @Test
     void testTxnEqualsWithDummyObject() {
-        Object dummy = new Object();
-        assertEquals(false, transaction.equals(dummy));
+        assertFalse(txn1.equals(dummy));
     }
 
     @Test
     void testTxnEqualsWithSameTxnObject() {
-        assertEquals(true, transaction.equals(transaction));
+        assertTrue(txn1.equals(txn1));
     }
 
     @Test
     void testTxnEqualsWithDifferentTxnObject() {
-        Transaction txn = new Transaction(){{transactionId=2; accountId=10; amount=1500; isDebit=false;}};
-        assertEquals(false, transaction.equals(txn));
+        assertFalse(txn1.equals(txn2));
     }
-
 }
