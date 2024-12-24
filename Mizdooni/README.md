@@ -50,6 +50,18 @@ curl --location 'http://localhost:8080/api/signup' \
     "role": "client"
 }
 '
+'
+{
+    "username": "manager",
+    "password": "manager03",
+    "email": "manager@gmail.com",
+    "address": {
+        "country": "Iran",
+        "city": "Tehran"
+    },
+    "role": "manager"
+}
+'
 ```
 
 ### Login
@@ -57,9 +69,9 @@ curl --location 'http://localhost:8080/api/signup' \
 ```bash
 curl --location 'http://localhost:8080/api/login' \
 --header 'Content-Type: application/json' \
---data '{
-    "username": "Peyman",
-    "password": "asdf"
+--data ' {
+    "username": "manager",
+    "password": "manager03"
 }
 '
 ```
@@ -137,6 +149,21 @@ curl --location 'http://localhost:8080/api/restaurants' \
 --header 'Content-Type: application/json' \
 --data '{
     "name": "The Best Foods",
+    "type": "Sea Food",
+    "description": "Lorem ipsum dolor",
+    "startTime": "09:00",
+    "endTime": "22:00",
+    "image": null,
+    "address": {
+        "country": "Iran",
+        "city": "Tehran",
+        "street": "Bahar"
+    }
+}
+'
+'
+{
+    "name": "The Best Foods 2",
     "type": "Sea Food",
     "description": "Lorem ipsum dolor",
     "startTime": "09:00",
