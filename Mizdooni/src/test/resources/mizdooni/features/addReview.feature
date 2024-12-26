@@ -27,3 +27,10 @@ Feature: Add Review
     When both reviews are added to the restaurant
     Then the restaurant should have 2 reviews
     And the average rating should be food 4.0, service 4.0, ambiance 3.5, overall 4.0
+
+  Scenario: Adding a review with invalid ratings
+    Given a restaurant named "Gourmet Hub" with no reviews
+    And a user named "john_doe"
+    And a new review by "john_doe" with ratings food 6, service 4, ambiance 4, overall 5
+    When the review is added to the restaurant
+    Then an error should be thrown with message "Invalid rating values"
