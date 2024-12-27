@@ -17,7 +17,9 @@ Feature: Add Reservation
     When both reservations are added
     Then the user's reservation count should be 2
     And the reservation list should contain the reservation for "Burger Joint"
+    And the first reservation should have reservation number 0
     And the reservation list should contain the reservation for "Sushi Spot"
+    And the second reservation should have reservation number 1
 
   Scenario: Reservation number increments correctly
     Given a user with username "alice" and role "client"
