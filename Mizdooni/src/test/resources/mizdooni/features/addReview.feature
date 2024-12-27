@@ -15,7 +15,7 @@ Feature: Add Review
     Given a restaurant named "Gourmet Hub" with an existing review by "john_doe" with ratings food 4, service 3, ambiance 3, overall 4
     And a new review by "john_doe" with ratings food 5, service 5, ambiance 5, overall 5
     When the review is added to the restaurant
-    Then the restaurant should still have 1 review
+    Then the restaurant should have 1 review
     And the average rating should be food 5.0, service 5.0, ambiance 5.0, overall 5.0
 
   Scenario: Adding multiple reviews by different users
