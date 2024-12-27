@@ -29,7 +29,14 @@ public class AddReservationSteps {
                 LocalTime.now().plusHours(8), "100% goosfandi", address, ":|");
 
         Table table = new Table(1, restaurant.getId(), 8);
-        reservation1 = new Reservation(user, restaurant, table, LocalDateTime.parse(dateTime));
+        if (reservation1 == null) {
+            reservation1 = new Reservation(user, restaurant, table, LocalDateTime.parse(dateTime));
+            reservation1.setReservationNumber(1);
+        }
+        else {
+            reservation2 = new Reservation(user, restaurant, table, LocalDateTime.parse(dateTime));
+            reservation2.setReservationNumber(2);
+        }
     }
 
     @And("another new reservation for restaurant {string} at {string}")

@@ -24,6 +24,6 @@ Feature: Calculate Average Rating
   Scenario: Updating a user's review
     Given a restaurant named "Green Bistro" managed by user "manager1"
     And a review by user "client1" with food rating 4, service rating 5, ambiance rating 4, and overall rating 4
-    And another review by user "client1" with food rating 2, service rating 3, ambiance rating 2, and overall rating 2
+    And a review by user "client1" with food rating 2, service rating 3, ambiance rating 2, and overall rating 2
     When the average rating is calculated
     Then the average rating should be food 2.0, service 3.0, ambiance 2.0, and overall 2.0

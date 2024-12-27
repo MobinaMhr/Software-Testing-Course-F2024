@@ -37,7 +37,7 @@ public class AddReviewSteps {
         Rating rating = new Rating(){{food = food_; ambiance = ambiance_; service = service_; overall= overall_;}};
         Review review = new Review(user, rating, "Great food!", LocalDateTime.now());
         
-        if (review1 == null) {
+        if (review1 == null || review1.getUser().equals(user)) {
             review1 = review;
         } else {
             review2 = review;
