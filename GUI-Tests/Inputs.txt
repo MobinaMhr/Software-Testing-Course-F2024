@@ -1,0 +1,84 @@
+Sign up
+{
+    "username": "swt",
+    "password": "fall03",
+    "email": "swt@gmail.com",
+    "address": {
+        "country": "Iran",
+        "city": "Tehran"
+    },
+    "role": "client"
+}
+{
+    "username": "manager",
+    "password": "manager03",
+    "email": "manager@gmail.com",
+    "address": {
+        "country": "Iran",
+        "city": "Tehran"
+    },
+    "role": "manager"
+}
+logIn
+{
+    "username": "manager",
+    "password": "manager03"
+}
+AddRestaurant
+{
+    "name": "The Best Foods",
+    "type": "Sea Food",
+    "description": "Lorem ipsum dolor",
+    "startTime": "09:00",
+    "endTime": "22:00",
+    "image": null,
+    "address": {
+        "country": "Iran",
+        "city": "Tehran",
+        "street": "Bahar"
+    }
+}
+{
+    "name": "The Best Foods 2",
+    "type": "Sea Food",
+    "description": "Lorem ipsum dolor",
+    "startTime": "09:00",
+    "endTime": "22:00",
+    "image": null,
+    "address": {
+        "country": "Iran",
+        "city": "Tehran",
+        "street": "Bahar"
+    }
+}
+AddTable
+2
+{
+    "seatsNumber": 2
+}
+Logout!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+get(Restaurants)
+1
+{
+  "name": "The Best Foods",
+  "type": "Sea Food",
+  "location": "Tehran",
+  "sort": "rating",
+  "order": "asc"
+}
+get available
+2
+2
+2025-10-26
+
+Reserve
+2
+{
+    "people": 2,
+    "datetime": "2025-10-26 09:00"
+}
+seeReservations
+4
+Cancle
+0
