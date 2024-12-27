@@ -14,7 +14,7 @@ import java.util.Map;
 public class GetAverageRatingSteps {
     private Restaurant restaurant;
     private Rating averageRating;
-    private Map<String, User> users = new HashMap<>();
+    private final Map<String, User> users = new HashMap<>();
 
     @Given("a restaurant named {string} managed by user {string}")
     public void aRestaurantNamedManagedByUser(String restaurantName, String managerUsername) {
@@ -37,10 +37,10 @@ public class GetAverageRatingSteps {
 
     @Then("the average rating should be food {double}, service {double}, ambiance {double}, and overall {double}")
     public void theAverageRatingShouldBe(Double food, Double service, Double ambiance, Double overall) {
-        assertEquals(food, averageRating.food, 0.01);
-        assertEquals(service, averageRating.service, 0.01);
+        assertEquals(food,     averageRating.food, 0.01);
+        assertEquals(service,  averageRating.service, 0.01);
         assertEquals(ambiance, averageRating.ambiance, 0.01);
-        assertEquals(overall, averageRating.overall, 0.01);
+        assertEquals(overall,  averageRating.overall, 0.01);
     }
 
     @Then("the average rating should be 0 for all categories")

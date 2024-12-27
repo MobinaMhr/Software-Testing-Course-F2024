@@ -18,8 +18,10 @@ public class AddReviewSteps {
 
     @Given("a restaurant named {string} with no reviews")
     public void aRestaurantNamedWithNoReviews(String restaurantName) {
-        User manager = new User("manager", "password123", "manager@example.com", null, User.Role.manager);
-        restaurant = new Restaurant(restaurantName, manager, "Fine Dining", null, null, "Description", null, null);
+        User manager = new User("manager", "password123",
+                "manager@example.com", null, User.Role.manager);
+        restaurant = new Restaurant(restaurantName, manager, "Fine Dining",
+                null, null, "Description", null, null);
     }
 
     @Given("a user named {string}")
@@ -45,7 +47,8 @@ public class AddReviewSteps {
     }
 
     @Given("a restaurant named {string} with an existing review by {string} with ratings food {int}, service {int}, ambiance {int}, overall {int}")
-    public void aRestaurantNamedWithAnExistingReviewByWithRatingsFoodServiceAmbianceOverall(String restaurantName, String username, int food, int service, int ambiance, int overall) {
+    public void aRestaurantNamedWithAnExistingReviewByWithRatingsFoodServiceAmbianceOverall(String restaurantName,
+                    String username, int food, int service, int ambiance, int overall) {
         aRestaurantNamedWithNoReviews(restaurantName);
         aUserNamed(username);
         aNewReviewByWithRatingsFoodServiceAmbianceOverall(username, food, service, ambiance, overall);
@@ -71,9 +74,10 @@ public class AddReviewSteps {
     @Then("the average rating should be food {double}, service {double}, ambiance {double}, overall {double}")
     public void theAverageRatingShouldBeFoodServiceAmbianceOverall(double food, double service, double ambiance, double overall) {
         Rating average = restaurant.getAverageRating();
-        assertEquals(food, average.food, 0.01);
-        assertEquals(service, average.service, 0.01);
-        assertEquals(ambiance, average.ambiance, 0.01);
-        assertEquals(overall, average.overall, 0.01);
+
+        assertEquals(food,      average.food, 0.01);
+        assertEquals(service,   average.service, 0.01);
+        assertEquals(ambiance,  average.ambiance, 0.01);
+        assertEquals(overall,   average.overall, 0.01);
     }
 }
