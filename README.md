@@ -36,4 +36,4 @@ The test scenarios are written using **Cucumber**’s Gherkin language and store
 In addition, GUI testing was recorded using **Katalon Recorder** on **Swagger UI**, which visualizes Mizdooni's API.
 
 ---
-![structure](https://github.com/MobinaMhr/Software-Testing-Course-S2025/blob/main/assets/app-struct.png)
+<!-- ![structure](https://github.com/MobinaMhr/Software-Testing-Course-S2025/blob/main/assets/app-struct.png) -->
